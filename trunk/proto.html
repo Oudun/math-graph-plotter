@@ -1,0 +1,34 @@
+<html>
+	<body>
+		<script>
+
+
+var parent = function() {
+
+	this.calculate = function(x, y) {
+		return x + y;
+	}
+
+	this.plot = function(x, y) {
+		alert (x + "+" + y);
+	}
+
+
+}
+
+
+var child = new parent();
+
+child.plot = function(x, y) {
+		alert (x + "*" + y);
+}
+
+
+alert (child.calculate(2, 3));
+child.plot(2, 3);
+
+
+
+		</script>
+	</body>
+</html>
