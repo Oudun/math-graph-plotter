@@ -1,0 +1,111 @@
+<html>
+<body>
+<canvas id="a" width="800" height="600">not supported</canvas>
+<script>
+
+	var canvas = document.getElementById("a");
+  	var context = canvas.getContext("2d");
+
+	var	startX = -2;
+	var	startY = -1;
+	var	endX = 2;
+	var 	endY = 1;
+
+	var 	stepX = (endX-startX)/1000;
+
+	function translateX(x) {
+		var A = canvas.width/(endX-startX);
+		var B = -A * startX;
+		return (A*x + B);		
+	}
+
+	function translateY(y) {
+		var A = canvas.height/(startY-endY);
+		var B = -A * endY;
+		return (A*y + B);		
+	}
+
+
+
+	function map(point) {
+
+		var mappedPoint = new Array();
+
+		var A1 = canvas.width/(endX-startX);
+		var B1 = -A1 * startX;
+
+		var A2 = canvas.height/(startY-endY);
+		var B2 = -A2 * endY;
+
+		mappedPoint[0] = A1*point[0] + B1;
+		mappedPoint[1] = A2*point[1] + B2;
+
+		return mappedPoint;
+
+	}
+
+
+	function translateY(y) {
+		var A = canvas.height/(startY-endY);
+		var B = -A * endY;
+		return (A*y + B);		
+	}
+
+
+
+	function axisX(startX, startY, endX, endY) {
+
+		context.strokeStyle = '#000000';
+
+		context.beginPath();
+      		context.moveTo(canvas.width/2, 0);
+	      	context.lineTo(canvas.width/2, canvas.height);
+      		context.stroke();	
+
+		context.beginPath();
+      		context.moveTo(0, canvas.height/2);
+	      	context.lineTo(canvas.width, canvas.height/2);
+      		context.stroke();	
+
+	}
+
+	
+
+	function func(x) {
+		return 0.2*(Math.sin(10*x)-Math.sin(2*x)+Math.cos(3*x));
+	}
+
+
+	function graph() {
+
+
+		context.strokeStyle = '#ff0000';
+
+		var x;
+	
+		for (x=startX; x<endX; x+=stepX) {
+			context.beginPath();
+		      	context.moveTo(translateX(x), translateY(func(x)));
+		      	context.lineTo(translateX(x+stepX), translateY(func(x+stepX)));
+      			context.stroke();	
+			context.closePath();
+		}
+	}
+
+
+
+</script>
+
+
+<script>
+	axisX(0,0, 100, 1);
+	graph();
+	var point = new Array();
+	point[0]=10;
+	point[1]=0;
+	alert(map(point));
+</script>
+
+
+</body>
+</html>
