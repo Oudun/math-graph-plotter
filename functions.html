@@ -3,8 +3,8 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
  </head>
 <body>
-<canvas id="c" width="620" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
-<canvas id="a" width="620" height="480">canvas not supported</canvas>
+<canvas id="c" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
+<canvas id="a" width="580" height="480">canvas not supported</canvas>
 <script>
 
 var c = document.getElementById("c");
@@ -29,92 +29,23 @@ var functions = new Array();
 
 var selectedId = 0;
 
-////////////////////
-//                //
-//   DIVIDE       //
-//                //
-////////////////////
+///////////////////////////////
+//                           //
+//   ONE ARG FUNCTION        //
+//                           //
+///////////////////////////////
 
-function TWO_ARGS_FUNCTION() {
+function ONE_ARG_FUNCTION () {    
 
-    this.id = counter++;
-    this.argFirst = null;
-    this.argSecond = null;
-    this.offsetX = null;
-    this.offsetY = null;
-    this.firstOffsetX = null;
-    this.firstOffsetY = null;
-    this.secondOffsetX = null;
-    this.secondOffsetY = null;
+    this.arg = null;
+    this.argOffsetX = null;
+    this.argOffsetY = null;
+
 
     this.plot = function  (offsetX, offsetY, ctx) {
 
         this.offsetX = offsetX;
         this.offsetY = offsetY;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-        this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.replaceChild = function(_id, func) {
-        if (this.argFirst.id==_id) {
-            this.argFirst.remove();
-            this.argFirst=func;
-        } else if (this.argSecond.id==_id) {
-            this.argSecond.remove();
-            this.argSecond=func;
-        } else {
-            this.argFirst.replaceChild(_id, func);
-            this.argSecond.replaceChild(_id, func);
-        }
-    }
-
-    this.remove = function() {
-        this.argFirst.remove();
-        this.argSecond.remove();
-        this.argFirst = null;
-        this.argSecond = null;
-        functions[this.id] = null;
-    }
-
-    this.innerPlot = function (offsetX, offsetY, ctx) {
-
-
-
-    };
-
-    this.calculate = function (x) {
-        return null;
-    }
-
-    this.width = function () {
-        return null;
-    }
-
-    this.height = function () {
-        return null;
-    }
-
-}
-
-
-function ROOT_FUNCTION () {    
-
-    this.id = counter++;
-    this.arg = null;
-    this.argOffsetX = null;
-    this.argOffsetY = null;
-    
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = 0;
-        this.offsetY = 0;
         ctx.strokeStyle = "red";
 
         if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
@@ -140,13 +71,150 @@ function ROOT_FUNCTION () {
         functions[this.id] = null;
     }
 
+    this.innerPlot = function(offsetX, offsetY, ctx) { }
+
+    this.calculate = function (x) {}
+
+    this.width = function () {}
+
+    this.height = function () {}
+
+
+}
+
+///////////////////////////////
+//                           //
+//   TWO_ARGS_FUNCTION       //
+//                           //
+///////////////////////////////
+
+function TWO_ARGS_FUNCTION() {
+
+    this.id = counter++;
+    this.argFirst = null;
+    this.argSecond = null;
+    this.offsetX = null;
+    this.offsetY = null;
+    this.firstOffsetX = null;
+    this.firstOffsetY = null;
+    this.secondOffsetX = null;
+    this.secondOffsetY = null;
+
+}    
+
+TWO_ARGS_FUNCTION.prototype.plot = function  (offsetX, offsetY, ctx) {
+
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
+
+    this.innerPlot(offsetX, offsetY, ctx);
+    this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
+    this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
+    functions[this.id] = this;
+
+}
+
+TWO_ARGS_FUNCTION.prototype.replaceChild = function(_id, func) {
+    if (this.argFirst.id==_id) {
+        this.argFirst.remove();
+        this.argFirst=func;
+    } else if (this.argSecond.id==_id) {
+        this.argSecond.remove();
+        this.argSecond=func;
+    } else {
+        this.argFirst.replaceChild(_id, func);
+        this.argSecond.replaceChild(_id, func);
+    }
+}
+
+TWO_ARGS_FUNCTION.prototype.remove = function() {
+    this.argFirst.remove();
+    this.argSecond.remove();
+    this.argFirst = null;
+    this.argSecond = null;
+    functions[this.id] = null;
+}
+
+TWO_ARGS_FUNCTION.prototype.innerPlot = function (offsetX, offsetY, ctx) {};
+
+TWO_ARGS_FUNCTION.prototype.calculate = function (x) { return null;}
+
+TWO_ARGS_FUNCTION.prototype.width = function () {return null;}
+
+TWO_ARGS_FUNCTION.prototype.height = function () {return null;}
+
+///////////////////////////////
+//                           //
+//   NO_ARGS_FUNCTION       //
+//                           //
+///////////////////////////////
+
+function NO_ARGS_FUNCTION() {
+
+    this.id = counter++;
+    this.offsetX = null;
+    this.offsetY = null;
+
+}    
+
+NO_ARGS_FUNCTION.prototype.plot = function  (offsetX, offsetY, ctx) {
+
+    alert("proto");
+
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
+
+    this.innerPlot(offsetX, offsetY, ctx);
+    this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
+    this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
+    functions[this.id] = this;
+
+}
+
+NO_ARGS_FUNCTION.prototype.replaceChild = function(_id, func) {}
+
+NO_ARGS_FUNCTION.prototype.remove = function() {functions[this.id] = null;}
+
+NO_ARGS_FUNCTION.prototype.calculate = function (x) { return null;}
+
+NO_ARGS_FUNCTION.prototype.width = function () {return null;}
+
+NO_ARGS_FUNCTION.prototype.height = function () {return null;}
+
+///////////////////////////////
+//                           //
+//   ROOT FUNCTION           //
+//                           //
+///////////////////////////////
+
+function ROOT_FUNCTION () {    
+
+    this.id = counter++;
+    
+    this.plot = function  (offsetX, offsetY, ctx) {
+
+        this.offsetX = 0;
+        this.offsetY = 0;
+        ctx.strokeStyle = "red";
+
+        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
+
+        this.innerPlot(offsetX, offsetY, ctx);
+        
+        this.arg.plot(this.argOffsetX, this.argOffsetY, ctx);
+        functions[this.id] = this;
+
+    }
+
     this.innerPlot = function(offsetX, offsetY, ctx) {
 
         var marginX = (this.width()- ctx.measureText("y(x)=").width -this.arg.width()-gapX)/2;
-
         this.argOffsetX = marginX + ctx.measureText("y(x)=").width + gapX;
         this.argOffsetY = (this.height()-this.arg.height())/2;
-
         ctx.fillText("y(x)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
 
     }
@@ -165,6 +233,46 @@ function ROOT_FUNCTION () {
 
 }
 
+ROOT_FUNCTION.prototype = new ONE_ARG_FUNCTION();
+
+///////////////////////////////
+//                           //
+//   BRACKETS                //
+//                           //
+///////////////////////////////
+
+function BRACKETS () {    
+
+    this.id = counter++;
+    this.text1 = "(";
+    this.text2 = ")";
+    
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+
+//        alert("BRACKET offsetX:"+offsetX+"offsetY:"+offsetY);
+
+        this.argOffsetX = offsetX + ctx.measureText(this.text1).width;
+        this.argOffsetY = offsetY;
+        ctx.fillText(this.text1, offsetX, offsetY + (this.height()-basicHeight)/2 + baselineOffset);
+        ctx.fillText(this.text2, offsetX + ctx.measureText(this.text1).width + this.arg.width(), offsetY + (this.height()-basicHeight)/2 + baselineOffset);
+
+    }
+
+    this.calculate = function (x) {
+        return this.arg.calculate(x);
+    }
+
+    this.width = function () {
+        return ctx.measureText(this.text1).width + this.arg.width() + ctx.measureText(this.text2).width;
+    }
+
+    this.height = function () {
+        return this.arg.height();
+    }
+
+}
+
+BRACKETS.prototype = new ONE_ARG_FUNCTION();
 
 ////////////////////
 //                //
@@ -175,52 +283,6 @@ function ROOT_FUNCTION () {
 function DIV () {    
 
     this.id = counter++;
-    this.argFirst = null;
-    this.argSecond = null;
-    this.offsetX = null;
-    this.offsetY = null;
-    this.firstOffsetX = null;
-    this.firstOffsetY = null;
-    this.secondOffsetX = null;
-    this.secondOffsetY = null;
-
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-        this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.replaceChild = function(_id, func) {
-        if (this.argFirst.id==_id) {
-            this.argFirst.remove();
-            this.argFirst=func;
-        } else if (this.argSecond.id==_id) {
-            this.argSecond.remove();
-            this.argSecond=func;
-        } else {
-            this.argFirst.replaceChild(_id, func);
-            this.argSecond.replaceChild(_id, func);
-        }
-    }
-
-    this.remove = function() {
-        this.argFirst.remove();
-        this.argSecond.remove();
-        functions[this.argFirst.id]=null;
-        functions[this.argSecond.id]=null;
-        this.argFirst = null;
-        this.argSecond = null;
-        functions[this.id] = null;
-    }
 
     this.innerPlot = function(offsetX, offsetY, ctx) {
 
@@ -254,6 +316,9 @@ function DIV () {
 
 }
 
+DIV.prototype = new TWO_ARGS_FUNCTION();
+
+
 ///////////////////
 //               //
 //   MULTIPLY    //
@@ -263,53 +328,6 @@ function DIV () {
 function MUL() {
 
     this.id = counter++;
-    this.argFirst = null;
-    this.argSecond = null;
-    this.offsetX = null;
-    this.offsetY = null;
-    this.firstOffsetX = null;
-    this.firstOffsetY = null;
-    this.secondOffsetX = null;
-    this.secondOffsetY = null;
-
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-        this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.replaceChild = function(_id, func) {
-        if (this.argFirst.id==_id) {
-            this.argFirst.remove();
-            this.argFirst=func;
-        } else if (this.argSecond.id==_id) {
-            this.argSecond.remove();
-            this.argSecond=func;
-        } else {
-            this.argFirst.replaceChild(_id, func);
-            this.argSecond.replaceChild(_id, func);
-        }
-    }
-
-    this.remove = function() {
-        this.argFirst.remove();
-        this.argSecond.remove();
-        functions[this.argFirst.id]=null;
-        functions[this.argSecond.id]=null;
-        this.argFirst = null;
-        this.argSecond = null;
-        functions[this.id] = null;
-    }
-
 
     this.innerPlot = function(offsetX, offsetY, ctx) {
 
@@ -338,21 +356,23 @@ ________________________________________________________________________
         this.secondOffsetX = this.offsetX + this.argFirst.width() + gapX + charX + gapX;
         this.secondOffsetY = this.offsetY + ((maxHeight - this.argSecond.height()) / 2)
 
-};
+    };
 
-this.calculate = function (x) {
-    return this.argFirst.calculate(x) * this.argSecond.calculate(x);
+    this.calculate = function (x) {
+        return this.argFirst.calculate(x) * this.argSecond.calculate(x);
+    }
+
+    this.width = function () {
+        return this.argFirst.width() + gapX + charX + gapX + this.argSecond.width();
+    }
+
+    this.height = function () {
+        return Math.max(this.argFirst.height(), this.argSecond.height());
+    }
+
 }
 
-this.width = function () {
-    return this.argFirst.width() + gapX + charX + gapX + this.argSecond.width();
-}
-
-this.height = function () {
-    return Math.max(this.argFirst.height(), this.argSecond.height());
-}
-
-}
+MUL.prototype = new TWO_ARGS_FUNCTION();
 
 ///////////////////
 //               //
@@ -363,53 +383,6 @@ this.height = function () {
 function ADD() {
 
   this.id = counter++;
-    this.argFirst = null;
-    this.argSecond = null;
-    this.offsetX = null;
-    this.offsetY = null;
-    this.firstOffsetX = null;
-    this.firstOffsetY = null;
-    this.secondOffsetX = null;
-    this.secondOffsetY = null;
-
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-        this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.replaceChild = function(_id, func) {
-        if (this.argFirst.id==_id) {
-            this.argFirst.remove();
-            this.argFirst=func;
-        } else if (this.argSecond.id==_id) {
-            this.argSecond.remove();
-            this.argSecond=func;
-        } else {
-            this.argFirst.replaceChild(_id, func);
-            this.argSecond.replaceChild(_id, func);
-        }
-    }
-
-    this.remove = function() {
-        this.argFirst.remove();
-        this.argSecond.remove();
-        functions[this.argFirst.id]=null;
-        functions[this.argSecond.id]=null;
-        this.argFirst = null;
-        this.argSecond = null;
-        functions[this.id] = null;
-    }
-
 
     this.innerPlot = function(offsetX, offsetY, ctx) {
 
@@ -440,14 +413,18 @@ function ADD() {
 
 }
 
-//////////////////////////////////////////////////
+ADD.prototype = new TWO_ARGS_FUNCTION();
+
+///////////////////
+//               //
+//   CONST       //
+//               //
+///////////////////
 
 function CONST(val) {
     
     this.value = val;
     this.id = counter++;
-    this.offsetX = null;
-    this.offsetY = null;
 
     this.plot = function (offsetX, offsetY, ctx) {
 
@@ -466,14 +443,6 @@ function CONST(val) {
         return this.value;
     }
 
-    this.replaceChild = function(_id, func) {
-
-    }
-
-    this.remove = function() {
-        functions[this.id] = null;
-    }
-
     this.width = function () {
         return ctx.measureText(val).width;
     }
@@ -482,13 +451,18 @@ function CONST(val) {
         return basicHeight;
     }
 
-
 }
+
+CONST.prototype = new NO_ARGS_FUNCTION();
+
+///////////////////
+//               //
+//   VAR       //
+//               //
+///////////////////
 
 function VAR() {
     this.id = counter++;
-    this.offsetX = null;
-    this.offsetY = null;
 
     this.plot = function (offsetX, offsetY, ctx) {
 
@@ -508,14 +482,6 @@ function VAR() {
         return x;
     }
 
-    this.replaceChild = function(_id, func) {
-
-    }
-
-    this.remove = function() {
-        functions[this.id] = null;
-    }
-
     this.width = function () {
         return ctx.measureText("x").width;
     }
@@ -525,6 +491,8 @@ function VAR() {
     }
 
 }
+
+VAR.prototype = new NO_ARGS_FUNCTION();
 
 var rootFunc;
 
@@ -607,6 +575,14 @@ function setConst(i) {
 
 function setVar() {
     var child = new VAR();
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setBrackets() {
+    var child = new BRACKETS();
+    child.arg = new CONST("?");
     rootFunc.replaceChild(selectedId, child);
     ctx.clearRect(0, 0, c.width, c.height);
     plot();
@@ -746,6 +722,7 @@ function check() {
     <button onClick="javascript:setConst(-1);"><h2>-1</h2></button>
     <button onClick="javascript:setConst(1);"><h2>1</h2></button>
     <button onClick="javascript:setConst(2);"><h2>2</h2></button>
+    <button onClick="javascript:setBrackets();"><h2>(?)</h2></button>
     <button onClick="javascript:alert(rootFunc.calculate(32));"><h2>Result</h2></button>
     <button onClick="javascript:check();"><h2>Check</h2></button>
     <button onClick="javascript:graph();"><h2>Graph</h2></button>
