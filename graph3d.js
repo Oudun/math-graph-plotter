@@ -161,7 +161,7 @@
 	}
 
 
-	function func(theta, phi) {
+	function funcSperic(theta, phi) {
 
 		var result;
 
@@ -182,6 +182,7 @@
 
 	function graph3D() {
 
+
 		context.clearRect(0, 0, canvas.width, canvas.height); 
 
 		axis();
@@ -194,8 +195,8 @@
 		for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
 			for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
 
-				startPoint = getScreenPoint(theta, phi, func(theta,phi));
-				endPoint = getScreenPoint(theta, phi+stepPhi, func(theta, phi+stepPhi));
+				startPoint = getScreenPoint(theta, phi, funcSperic(theta,phi));
+				endPoint = getScreenPoint(theta, phi+stepPhi, funcSperic(theta, phi+stepPhi));
 
 				context.beginPath();
 		      		context.moveTo(startPoint[0],startPoint[1]);
@@ -212,8 +213,8 @@
 		for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
 			for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
 
-				startPoint = getScreenPoint(theta, phi, func(theta,phi));
-				endPoint = getScreenPoint(theta+stepTheta, phi, func(theta+stepTheta, phi));
+				startPoint = getScreenPoint(theta, phi, funcSperic(theta,phi));
+				endPoint = getScreenPoint(theta+stepTheta, phi, funcSperic(theta+stepTheta, phi));
 
 				context.beginPath();
 		      		context.moveTo(startPoint[0],startPoint[1]);
@@ -271,17 +272,17 @@
 
 		resultPoint = new Array();
 
-		resultPoint[0] = origPoint[0]*matrix3D[0][0];
-		resultPoint[0] += origPoint[1]*matrix3D[0][1];
-		resultPoint[0] += origPoint[2]*matrix3D[0][2];		
+		resultPoint[0] = origPoint[0]*matrix[0][0];
+		resultPoint[0] += origPoint[1]*matrix[0][1];
+		resultPoint[0] += origPoint[2]*matrix[0][2];		
 
-		resultPoint[1] = origPoint[0]*matrix3D[1][0];
-		resultPoint[1] += origPoint[1]*matrix3D[1][1];
-		resultPoint[1] += origPoint[2]*matrix3D[1][2];		
+		resultPoint[1] = origPoint[0]*matrix[1][0];
+		resultPoint[1] += origPoint[1]*matrix[1][1];
+		resultPoint[1] += origPoint[2]*matrix[1][2];		
 
-		resultPoint[2] = origPoint[0]*matrix3D[2][0];
-		resultPoint[2] += origPoint[1]*matrix3D[2][1];
-		resultPoint[2] += origPoint[2]*matrix3D[2][2];		
+		resultPoint[2] = origPoint[0]*matrix[2][0];
+		resultPoint[2] += origPoint[1]*matrix[2][1];
+		resultPoint[2] += origPoint[2]*matrix[2][2];		
 	
 		return resultPoint;
 	}

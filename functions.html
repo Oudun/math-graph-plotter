@@ -1,21 +1,32 @@
 <html>
  <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <style>
+        .formulaType {
+            font-family: Arial; 
+//            font-style:italic;
+            font-size:18pt;
+            font-weight:bold;
+        }
+    </style>
+    <script>
+
+
+    </script>
  </head>
 <body>
-<!--
-<div align="left">
-    <button><h1>y(x)</h1></button>
-    <button><h1>x(t), y(t)</h1></button>
-    <button><h1>x(t), y(t), z(t)</h1></button>
-    <button><h1>ρ(φ)</h1></button>
-    <button><h1>z(x,y)</h1></button>
-    <button><h1>ρ(θ,φ)</h1></button>
-    <button><h1>ρ(φ,h)</h1></button>
-</div>
--->
-<canvas id="c" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
-<canvas id="a" width="580" height="480">canvas not supported</canvas>
+<span align="left">
+    <button class="formulaType" onClick="javascript:to2D();toRect2();">y(x)</button>
+    <button class="formulaType" onClick="javascript:to2D();toParam2();">x(t), y(t</button>
+    <button class="formulaType" onClick="javascript:to3D();toParam3();">x(t), y(t), z(t)</button>
+    <button class="formulaType" onClick="javascript:to2D();toPolar();">ρ(φ)</button>
+    <button class="formulaType" onClick="javascript:to3D();toRect3();">z(x,y)</button>
+    <button class="formulaType" onClick="javascript:to3D();toSpheric();">ρ(θ,φ)</button>
+    <button class="formulaType" onClick="javascript:to3D();toCylindric();">ρ(φ,h)</button>
+</span>
+<br>
+<canvas id="c" style="padding-top:5" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
+<canvas id="a" style="padding-top:5" width="580" height="480">canvas not supported</canvas>
 <script src="functions.js"></script>
 <script>
 
@@ -34,27 +45,11 @@ context = canvas.getContext("2d");
 
 
 <script>
+
 var rootFunc;
 
-// div = Object.create(DIV);
-// div.argFirst = Object.create(MUL);
-// div.argFirst.argFirst = new VAR();
-// div.argFirst.argSecond = new ADD();
-// div.argFirst.argSecond.argFirst = new CONST(3);
-// div.argFirst.argSecond.argSecond = Object.create(DIV);
-// div.argFirst.argSecond.argSecond.argFirst = new CONST(4);
-// div.argFirst.argSecond.argSecond.argSecond = new VAR();
-// div.argSecond = new CONST(5);
-
-rootFunc =  new ROOT_FUNCTION_SPHERIC();
-rootFunc.arg = new SIN();
-rootFunc.arg.arg = new VARX("x");
-
-plot();
-
 function selectFunction(event) {
-    //alert((event.pageX-c.offsetLeft)+" "+(event.pageY-c.offsetTop);
-    alert(event.pageY-c.offsetTop);
+
     selectedId = 0;
     var i = 0;
     for (i = 0; i < functions.length; i++) {
@@ -63,7 +58,7 @@ function selectFunction(event) {
                 (event.pageX - c.offsetLeft > functions[i].offsetX) &&
                 (event.pageX - c.offsetLeft) < functions[i].offsetX + functions[i].width() &&
                 (event.pageY - c.offsetTop) > functions[i].offsetY &&
-                (event.pageY - c.offsetLeft) < functions[i].offsetY + functions[i].height()
+                (event.pageY - c.offsetTop) < functions[i].offsetY + functions[i].height()
                 ) {
             selectedId = functions[i].id;
         }
@@ -160,11 +155,21 @@ function plot() {
 function check() {
     var str = "";
     for (i in functions) {
+        str += i;
         if (functions[i]!=null) {
-            str += functions[i].id + "   ";
+            str += " id:" + functions[i].id;
+            str += " x:" + functions[i].offsetX;
+            str += " y:" + functions[i].offsetY;
+            str += " w:" + functions[i].width();
+            str += " h:" + functions[i].height();
         }
+        str +="\n";
     }
     alert(str);
+}
+
+function checkMatrix(a) {
+    alert (a);
 }
 
 </script>
@@ -172,52 +177,141 @@ function check() {
 <script>
 
     function clearGraph() {
-        //context.clearRect(canvas.offsetLeft, canvas.offsetTop, canvas.width, canvas.height);
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    function graph() {
-        //graph2D();
-        graph3D();
-    }
-
     function multiplyMatrixes(a, b) {
-//        return multiplyMatrixes2D(a, b);
-        return multiplyMatrixes3D(a, b);
+        return multiplyMatrixes(a, b);
     }
 
     function restore(a, b) {
-        //matrix2D = identityMatrix2D;
-        matrix3D = identityMatrix3D;
+        matrix = identityMatrix;
         graph();
     }
 
     function zoomIn(a, b) {
-        matrix3D = multiplyMatrixes(matrix3D,ZoomInMatrix3D);
+        matrix = multiplyMatrixes(matrix,ZoomInMatrix);
         graph();
     }
 
     function zoomOut(a, b) {
-        matrix3D = multiplyMatrixes(matrix3D,ZoomOutMatrix3D);
+        matrix = multiplyMatrixes(matrix,ZoomOutMatrix);
         graph();
     }
 
+    function to2D() {
+        graph = graph2D;
+        identityMatrix = IdentityMatrix2D;
+        multiplyMatrixes=multiplyMatrixes2D;
+        matrix = matrix2D;
+        ZoomInMatrix = ZoomInMatrix2D;
+        ZoomOutMatrix = ZoomOutMatrix2D;
+        document.all["rotx"].style.display='none';
+        document.all["roty"].style.display='none';
+        document.all["rotz"].style.display='none';
+    }
+
+    function to3D() {
+        graph = graph3D;
+        identityMatrix = identityMatrix3D;
+        multiplyMatrixes = multiplyMatrixes3D;
+        matrix = matrix3D;
+        ZoomInMatrix = ZoomInMatrix3D;
+        ZoomOutMatrix = ZoomOutMatrix3D;
+        document.all["rotx"].style.display='inline';
+        document.all["roty"].style.display='inline';
+        document.all["rotz"].style.display='inline';
+    }
+
+    function toRect2() {
+        document.all["x"].style.display='inline';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION();
+        rootFunc.arg = new SIN();
+        rootFunc.arg.arg = new VARX("x");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+    }
+
+    function toRect3() {
+        document.all["x"].style.display='inline';
+        document.all["y"].style.display='inline';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+    }
+
+    function toPolar() {
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+    }
+
+    function toParam2() {
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='inline';
+        document.all["h"].style.display='none';
+    }
+
+    function toParam3() {
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='inline';
+        document.all["h"].style.display='none';
+    }
+
+    function toSpheric() {
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='inline';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION_SPHERIC();
+        rootFunc.arg = new SIN();
+        rootFunc.arg.arg = new VARX("θ");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+
+    }
+
+    function toCylindric() {
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='inline';
+    }
 
 </script>
 
-
 <br>
-
 
 <div align="left">
 
     <button onClick="javascript:setMultiply();"><h2>?×?</h2></button>
     <button onClick="javascript:setDivide();"><h2>?/?</h2></button>
     <button onClick="javascript:setAdd();"><h2>?+?</h2></button>
-    <button onClick="javascript:setVarX('x');"><h2>x</h2></button>
-    <button onClick="javascript:setVarX('θ');"><h2>θ</h2></button>
-    <button onClick="javascript:setVarY('y');"><h2>y</h2></button>
-    <button onClick="javascript:setVarY('φ');"><h2>φ</h2></button>
+    <button id="x"      onClick="javascript:setVarX('x');"><h2>x</h2></button>
+    <button id="y"      onClick="javascript:setVarY('y');"><h2>y</h2></button>
+    <button id="theta"  onClick="javascript:setVarX('θ');"><h2>θ</h2></button>
+    <button id="phi"    onClick="javascript:setVarY('φ');"><h2>φ</h2></button>
+    <button id="t"      onClick="javascript:setVarX('t');"><h2>t</h2></button>
+    <button id="h"      onClick="javascript:setVarY('h');"><h2>h</h2></button>
     <button onClick="javascript:setConst(-1);"><h2>-1</h2></button>
     <button onClick="javascript:setConst(1);"><h2>1</h2></button>
     <button onClick="javascript:setConst(2);"><h2>2</h2></button>
@@ -225,21 +319,28 @@ function check() {
     <button onClick="javascript:setSquare();"><h2>(?²)</h2></button>
     <button onClick="javascript:setSinus();"><h2>sin(?)</h2></button>
 
-    <button style="background-color:red;color:white" onClick="javascript:checkLayout();"><h2>Check</h2></button>
+    <button style="background-color:red;color:white" onClick="javascript:check();"><h2>Check</h2></button>
 
     <button onClick="javascript:graph();"><h2>Graph</h2></button>
     <button onClick="javascript:clearGraph();"><h2>Clear</h2></button>
     <button onClick="javascript:zoomIn();"><h2>Zoom In</h2></button>
     <button onClick="javascript:zoomOut();"><h2>Zoom Out</h2></button>
 
-    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotX);graph();"><h2>X</h2></button>
-    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotY);graph();"><h2>Y</h2></button>
-    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotZ);graph();"><h2>Z</h2></button>
+    <button id="rotx" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotX);graph();"><h2>X Rotation</h2></button>
+    <button id="roty" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotY);graph();"><h2>Y Rotation</h2></button>
+    <button id="rotz" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotZ);graph();"><h2>Z Rotation</h2></button>
 
 
     <button onClick="javascript:restore();"><h2>Restore</h2></button>
 
 </div>
-<span id="check"></span>
+
+<script>
+    to2D();
+    toRect2();
+</script>
+
 </body>
 </html>
+
+
