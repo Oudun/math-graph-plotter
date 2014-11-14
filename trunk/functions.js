@@ -223,13 +223,12 @@ function ROOT_FUNCTION () {
 ROOT_FUNCTION.prototype = new ONE_ARG_FUNCTION();
 
 function ROOT_FUNCTION_SPHERIC() {
-    this.innerPlot = function(offsetX, offsetY, ctx) {
 
+    this.innerPlot = function(offsetX, offsetY, ctx) {
         var marginX = (this.width()- ctx.measureText("ρ(θ,φ)=").width -this.arg.width()-gapX)/2;
         this.argOffsetX = marginX + ctx.measureText("ρ(θ,φ)=").width + gapX;
         this.argOffsetY = (this.height()-this.arg.height())/2;
         ctx.fillText("ρ(θ,φ)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
-
     }
 
 }

@@ -20,17 +20,17 @@
 
     function axisX(startX, startY, endX, endY) {
 
-        context2D.strokeStyle = '#000000';
+        context.strokeStyle = '#000000';
 
-        context2D.beginPath();
-            context2D.moveTo(canvas.width/2, 0);
-            context2D.lineTo(canvas.width/2, canvas.height);
-            context2D.stroke();   
+        context.beginPath();
+            context.moveTo(canvas.width/2, 0);
+            context.lineTo(canvas.width/2, canvas.height);
+            context.stroke();   
 
-        context2D.beginPath();
-            context2D.moveTo(0, canvas.height/2);
-            context2D.lineTo(canvas.width, canvas.height/2);
-            context2D.stroke();   
+        context.beginPath();
+            context.moveTo(0, canvas.height/2);
+            context.lineTo(canvas.width, canvas.height/2);
+            context.stroke();   
 
     }
 
@@ -40,7 +40,7 @@
 
     function graph2D() {
 
-        context2D.strokeStyle = '#ff0000';
+        context.strokeStyle = '#ff0000';
 
         var x;
     
@@ -49,11 +49,11 @@
             startPoint = getScreenPoint2D(x, func(x));
             endPoint = getScreenPoint2D(x+stepX, func(x+stepX));
 
-            context2D.beginPath();
-                context2D.moveTo(startPoint[0],startPoint[1]);
-                context2D.lineTo(endPoint[0], endPoint[1]);
-                context2D.stroke();   
-            context2D.closePath();
+            context.beginPath();
+                context.moveTo(startPoint[0],startPoint[1]);
+                context.lineTo(endPoint[0], endPoint[1]);
+                context.stroke();   
+            context.closePath();
         }
     }
 
@@ -87,7 +87,7 @@
     // Multiplies two matrixes
     
     function multiplyMatrixes2D(firstMatrix, secondMatrix) {
-        
+     
         resultMatrix = [[0,0],[0,0]];
 
         var i;
