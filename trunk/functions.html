@@ -3,615 +3,37 @@
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
  </head>
 <body>
+<!--
+<div align="left">
+    <button><h1>y(x)</h1></button>
+    <button><h1>x(t), y(t)</h1></button>
+    <button><h1>x(t), y(t), z(t)</h1></button>
+    <button><h1>ρ(φ)</h1></button>
+    <button><h1>z(x,y)</h1></button>
+    <button><h1>ρ(θ,φ)</h1></button>
+    <button><h1>ρ(φ,h)</h1></button>
+</div>
+-->
 <canvas id="c" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
 <canvas id="a" width="580" height="480">canvas not supported</canvas>
+<script src="functions.js"></script>
 <script>
 
 var c = document.getElementById("c");
 var ctx = c.getContext("2d");
 ctx.strokeRect(0, 0, c.width, c.height);
-
-var charX = 8;
-var charY = 32;
-var gapX = 4;
-var gapY = 4;
-var counter = 0;
-
-var lineWidth = 1;
-//var basicWidth = 32;
-var basicHeight = 64;
-var baselineOffset = basicHeight * (3/4);
-var showRect = false;
-
-var fullSizeFont = "italic " + basicHeight + "px Georgia";
-var halfSizeFont = "italic " + 2*basicHeight/3 + "px Georgia";
-
 ctx.font = fullSizeFont;
 
-var functions = new Array();
+canvas = document.getElementById("a");
+context = canvas.getContext("2d");
 
-var selectedId = 0;
+</script>
 
-///////////////////////////////
-//                           //
-//   ONE ARG FUNCTION        //
-//                           //
-///////////////////////////////
+<script src="graph2d.js"></script>
+<script src="graph3d.js"></script>
 
-function ONE_ARG_FUNCTION () {    
 
-    this.arg = null;
-    this.argOffsetX = null;
-    this.argOffsetY = null;
-
-
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        this.arg.plot(this.argOffsetX, this.argOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.replaceChild = function(_id, func) {
-        if (this.arg.id==_id) {
-            this.arg.remove();
-            this.arg = func;
-        } else {
-            this.arg.replaceChild(_id, func);
-        }
-    }
-
-    this.remove = function() {
-        this.arg.remove();
-        functions[this.arg.id]=null;
-        functions[this.id] = null;
-    }
-
-    this.innerPlot = function(offsetX, offsetY, ctx) { }
-
-    this.calculate = function (x, y) {}
-
-    this.width = function () {}
-
-    this.height = function () {}
-
-
-}
-
-///////////////////////////////
-//                           //
-//   TWO_ARGS_FUNCTION       //
-//                           //
-///////////////////////////////
-
-function TWO_ARGS_FUNCTION() {
-
-    this.id = counter++;
-    this.argFirst = null;
-    this.argSecond = null;
-    this.offsetX = null;
-    this.offsetY = null;
-    this.firstOffsetX = null;
-    this.firstOffsetY = null;
-    this.secondOffsetX = null;
-    this.secondOffsetY = null;
-
-}    
-
-TWO_ARGS_FUNCTION.prototype.plot = function  (offsetX, offsetY, ctx) {
-
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-
-    if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-    this.innerPlot(offsetX, offsetY, ctx);
-    this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-    this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-    functions[this.id] = this;
-
-}
-
-TWO_ARGS_FUNCTION.prototype.replaceChild = function(_id, func) {
-    if (this.argFirst.id==_id) {
-        this.argFirst.remove();
-        this.argFirst=func;
-    } else if (this.argSecond.id==_id) {
-        this.argSecond.remove();
-        this.argSecond=func;
-    } else {
-        this.argFirst.replaceChild(_id, func);
-        this.argSecond.replaceChild(_id, func);
-    }
-}
-
-TWO_ARGS_FUNCTION.prototype.remove = function() {
-    this.argFirst.remove();
-    this.argSecond.remove();
-    this.argFirst = null;
-    this.argSecond = null;
-    functions[this.id] = null;
-}
-
-TWO_ARGS_FUNCTION.prototype.innerPlot = function (offsetX, offsetY, ctx) {};
-
-TWO_ARGS_FUNCTION.prototype.calculate = function (x, y) { return null;}
-
-TWO_ARGS_FUNCTION.prototype.width = function () {return null;}
-
-TWO_ARGS_FUNCTION.prototype.height = function () {return null;}
-
-///////////////////////////////
-//                           //
-//   NO_ARGS_FUNCTION       //
-//                           //
-///////////////////////////////
-
-function NO_ARGS_FUNCTION() {
-
-    this.id = counter++;
-    this.offsetX = null;
-    this.offsetY = null;
-
-}    
-
-NO_ARGS_FUNCTION.prototype.plot = function  (offsetX, offsetY, ctx) {
-
-    alert("proto");
-
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-
-    if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-    this.innerPlot(offsetX, offsetY, ctx);
-    this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
-    this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
-    functions[this.id] = this;
-
-}
-
-NO_ARGS_FUNCTION.prototype.replaceChild = function(_id, func) {}
-
-NO_ARGS_FUNCTION.prototype.remove = function() {functions[this.id] = null;}
-
-NO_ARGS_FUNCTION.prototype.calculate = function (x, y) { return null;}
-
-NO_ARGS_FUNCTION.prototype.width = function () {return null;}
-
-NO_ARGS_FUNCTION.prototype.height = function () {return null;}
-
-///////////////////////////////
-//                           //
-//   ROOT FUNCTION           //
-//                           //
-///////////////////////////////
-
-function ROOT_FUNCTION () {    
-
-    this.id = counter++;
-    
-    this.plot = function  (offsetX, offsetY, ctx) {
-
-        this.offsetX = 0;
-        this.offsetY = 0;
-        ctx.strokeStyle = "red";
-
-        if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
-
-        this.innerPlot(offsetX, offsetY, ctx);
-        
-        this.arg.plot(this.argOffsetX, this.argOffsetY, ctx);
-        functions[this.id] = this;
-
-    }
-
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-        var marginX = (this.width()- ctx.measureText("y(x)=").width -this.arg.width()-gapX)/2;
-        this.argOffsetX = marginX + ctx.measureText("y(x)=").width + gapX;
-        this.argOffsetY = (this.height()-this.arg.height())/2;
-        ctx.fillText("y(x)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
-
-    }
-
-    this.calculate = function (x, y) {
-        return this.arg.calculate(x);
-    }
-
-    this.width = function () {
-        return c.width;
-    }
-
-    this.height = function () {
-        return c.height;
-    }
-
-}
-
-ROOT_FUNCTION.prototype = new ONE_ARG_FUNCTION();
-
-///////////////////////////////
-//                           //
-//   BRACKETS                //
-//                           //
-///////////////////////////////
-
-function BRACKETS () {    
-
-    this.id = counter++;
-    this.text1 = "(";
-    this.text2 = ")";
-    
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-//        alert("BRACKET offsetX:"+offsetX+"offsetY:"+offsetY);
-
-        this.argOffsetX = offsetX + ctx.measureText(this.text1).width;
-        this.argOffsetY = offsetY;
-        ctx.fillText(this.text1, offsetX, offsetY + (this.height()-basicHeight)/2 + baselineOffset);
-        ctx.fillText(this.text2, offsetX + ctx.measureText(this.text1).width + this.arg.width(), offsetY + (this.height()-basicHeight)/2 + baselineOffset);
-
-    }
-
-    this.calculate = function (x, y) {
-        return this.arg.calculate(x);
-    }
-
-    this.width = function () {
-        return ctx.measureText(this.text1).width + this.arg.width() + ctx.measureText(this.text2).width;
-    }
-
-    this.height = function () {
-        return this.arg.height();
-    }
-
-}
-
-BRACKETS.prototype = new ONE_ARG_FUNCTION();
-
-///////////////////////////////
-//                           //
-//   SQUARE                  //
-//                           //
-///////////////////////////////
-
-function SQUARE () {    
-
-    this.id = counter++;
-    this.text = "²";
-    
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-
-        this.argOffsetX = offsetX;
-        this.argOffsetY = offsetY;
-        _offsetX = offsetX + this.arg.width();
-        ctx.fillText(this.text, _offsetX, offsetY + baselineOffset);
-    }
-
-    this.calculate = function (x, y) {
-        return this.arg.calculate(x)*this.arg.calculate(x);
-    }
-
-    this.width = function () {
-        var _width = this.arg.width() + ctx.measureText(this.text).width; 
-        return  _width;
-    }
-
-    this.height = function () {
-        return this.arg.height();
-    }
-
-}
-
-SQUARE.prototype = new ONE_ARG_FUNCTION();
-
-///////////////////////////////
-//                           //
-//   SINUS                   //
-//                           //
-///////////////////////////////
-
-function SIN () {    
-
-    this.id = counter++;
-    this.text1 = "sin(";
-    this.text2 = ")";
-    
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-//        alert("BRACKET offsetX:"+offsetX+"offsetY:"+offsetY);
-
-        this.argOffsetX = offsetX + ctx.measureText(this.text1).width;
-        this.argOffsetY = offsetY;
-        ctx.fillText(this.text1, offsetX, offsetY + (this.height()-basicHeight)/2 + baselineOffset);
-        ctx.fillText(this.text2, offsetX + ctx.measureText(this.text1).width + this.arg.width(), offsetY + (this.height()-basicHeight)/2 + baselineOffset);
-
-    }
-
-    this.calculate = function (x, y) {
-        return Math.sin(this.arg.calculate(x));
-    }
-
-    this.width = function () {
-        return ctx.measureText(this.text1).width + this.arg.width() + ctx.measureText(this.text2).width;
-    }
-
-    this.height = function () {
-        return this.arg.height();
-    }
-
-}
-
-SIN.prototype = new ONE_ARG_FUNCTION();
-
-////////////////////
-//                //
-//   DIVIDE       //
-//                //
-////////////////////
-
-function DIV () {    
-
-    this.id = counter++;
-
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-        this.firstOffsetX = offsetX + ((Math.max(this.argSecond.width(), this.argFirst.width()) - this.argFirst.width()) / 2);
-        this.firstOffsetY = offsetY;
-
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = lineWidth;
-
-        ctx.beginPath();
-        ctx.moveTo(offsetX, offsetY + gapY + this.argFirst.height());
-        ctx.lineTo(offsetX + Math.max(this.argSecond.width(), this.argFirst.width()), offsetY + this.argFirst.height() + gapY);
-        ctx.stroke();
-
-        this.secondOffsetX = offsetX + ((Math.max(this.argSecond.width(), this.argFirst.width()) - this.argSecond.width()) / 2);
-        this.secondOffsetY = offsetY + this.argFirst.height() + gapY + gapY;
-
-    }
-
-    this.calculate = function (x, y) {
-        return this.argFirst.calculate(x) / this.argSecond.calculate(x);
-    }
-
-    this.width = function () {
-        return Math.max(this.argFirst.width(), this.argSecond.width());
-    }
-
-    this.height = function () {
-        return this.argFirst.height() + gapY + gapY + this.argSecond.height();
-    }
-
-}
-
-DIV.prototype = new TWO_ARGS_FUNCTION();
-
-
-///////////////////
-//               //
-//   MULTIPLY    //
-//               //
-///////////////////
-
-function MUL() {
-
-    this.id = counter++;
-
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-/*
-________________________________________________________________________
-          ^
-          |  offsetY       |      |      |     |
-          V                |      |      |     |secondArg.width|
-          _________________|      |      |     |<------------->| 
-         |                 |      |      |     |_______________|_
-         |                 |      |      |     |               | ^
- offsetX | firstArg.width  |      |  Ж   |     |               | | secondArg.height
-<------->|<--------------->| gapX |charX | gapX|_______________|_V_
-         |_________________|<----><------><--->|
-
-*/
-        var maxHeight = Math.max(this.argSecond.height(), this.argFirst.height());
-
-        this.firstOffsetX = this.offsetX;
-        this.firstOffsetY = this.offsetY + ((maxHeight - this.argFirst.height()) / 2);
-
-        charY = Math.min(this.height(), charY);
-        charX = ctx.measureText("×").width
-        ctx.fillText("×", offsetX + this.argFirst.width() + gapX, offsetY + baselineOffset + (this.height() - basicHeight)/2);
-
-        this.secondOffsetX = this.offsetX + this.argFirst.width() + gapX + charX + gapX;
-        this.secondOffsetY = this.offsetY + ((maxHeight - this.argSecond.height()) / 2)
-
-    };
-
-    this.calculate = function (x, y) {
-        return this.argFirst.calculate(x) * this.argSecond.calculate(x);
-    }
-
-    this.width = function () {
-        return this.argFirst.width() + gapX + charX + gapX + this.argSecond.width();
-    }
-
-    this.height = function () {
-        return Math.max(this.argFirst.height(), this.argSecond.height());
-    }
-
-}
-
-MUL.prototype = new TWO_ARGS_FUNCTION();
-
-///////////////////
-//               //
-//   ADD         //
-//               //
-///////////////////
-
-function ADD() {
-
-  this.id = counter++;
-
-    this.innerPlot = function(offsetX, offsetY, ctx) {
-
-        var maxHeight = Math.max(this.argSecond.height(), this.argFirst.height());
-
-        this.firstOffsetX = this.offsetX;
-        this.firstOffsetY = this.offsetY + ((maxHeight - this.argFirst.height()) / 2);
-
-        charX = ctx.measureText("+").width
-        ctx.fillText("+", offsetX + this.argFirst.width() + gapX, offsetY + baselineOffset + (this.height() - basicHeight)/2);
-
-        this.secondOffsetX = this.offsetX + this.argFirst.width() + gapX + charX + gapX;
-        this.secondOffsetY = this.offsetY + ((maxHeight - this.argSecond.height()) / 2)
-
-    }
-
-    this.calculate = function (x, y) {
-        return this.argFirst.calculate(x) + this.argSecond.calculate(x);
-    }
-
-    this.width = function () {
-        return this.argFirst.width() + gapX + charX + gapX + this.argSecond.width();
-    }
-
-    this.height = function () {
-        return Math.max(this.argFirst.height(), this.argSecond.height());
-    }
-
-}
-
-ADD.prototype = new TWO_ARGS_FUNCTION();
-
-///////////////////
-//               //
-//   CONST       //
-//               //
-///////////////////
-
-function CONST(val) {
-    
-    this.value = val;
-    this.id = counter++;
-
-    this.plot = function (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "blue";
-        if (showRect)
-            ctx.strokeRect(offsetX, offsetY, this.width(), this.height());
-        ctx.font = "italic " + this.height() + "px Georgia";
-        ctx.fillText(val, offsetX, offsetY + baselineOffset);
-        functions[this.id] = this;
-
-    }
-
-    this.calculate = function (x, y) {
-        return this.value;
-    }
-
-    this.width = function () {
-        return ctx.measureText(val).width;
-    }
-
-    this.height = function () {
-        return basicHeight;
-    }
-
-}
-
-CONST.prototype = new NO_ARGS_FUNCTION();
-
-///////////////////
-//               //
-//   VAR  X     //
-//               //
-///////////////////
-
-function VARX() {
-    this.id = counter++;
-
-    this.plot = function (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "green";
-        if (showRect)
-            ctx.strokeRect(offsetX, offsetY, this.width(), this.height());
-        ctx.font = "italic " + this.height() + "px Georgia";
-        ctx.fillText("x", offsetX, offsetY + baselineOffset);
-
-        functions[this.id] = this;
-
-    }
-
-    this.calculate = function (x, y) {
-        return x;
-    }
-
-    this.width = function () {
-        return ctx.measureText("x").width;
-    }
-
-    this.height = function () {
-        return basicHeight;
-    }
-
-}
-
-VARX.prototype = new NO_ARGS_FUNCTION();
-
-///////////////////
-//               //
-//   VAR  Y     //
-//               //
-///////////////////
-
-function VARY() {
-    this.id = counter++;
-
-    this.plot = function (offsetX, offsetY, ctx) {
-
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        ctx.strokeStyle = "green";
-        if (showRect)
-            ctx.strokeRect(offsetX, offsetY, this.width(), this.height());
-        ctx.font = "italic " + this.height() + "px Georgia";
-        ctx.fillText("y", offsetX, offsetY + baselineOffset);
-
-        functions[this.id] = this;
-
-    }
-
-    this.calculate = function (x, y) {
-        return y;
-    }
-
-    this.width = function () {
-        return ctx.measureText("y").width;
-    }
-
-    this.height = function () {
-        return basicHeight;
-    }
-
-}
-
-VARY.prototype = new NO_ARGS_FUNCTION();
-
+<script>
 var rootFunc;
 
 // div = Object.create(DIV);
@@ -624,15 +46,15 @@ var rootFunc;
 // div.argFirst.argSecond.argSecond.argSecond = new VAR();
 // div.argSecond = new CONST(5);
 
-rootFunc =  new ROOT_FUNCTION();
-rootFunc.arg = new MUL();
-rootFunc.arg.argFirst = new VARY();
-rootFunc.arg.argSecond = new CONST(1);
+rootFunc =  new ROOT_FUNCTION_SPHERIC();
+rootFunc.arg = new SIN();
+rootFunc.arg.arg = new VARX("x");
 
 plot();
 
 function selectFunction(event) {
-    // alert(event.pageX-c.offsetLeft);
+    //alert((event.pageX-c.offsetLeft)+" "+(event.pageY-c.offsetTop);
+    alert(event.pageY-c.offsetTop);
     selectedId = 0;
     var i = 0;
     for (i = 0; i < functions.length; i++) {
@@ -691,8 +113,15 @@ function setConst(i) {
     plot();
 }
 
-function setVarX() {
-    var child = new VARX();
+function setVarX(ch) {
+    var child = new VARX(ch);
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setVarY(ch) {
+    var child = new VARY(ch);
     rootFunc.replaceChild(selectedId, child);
     ctx.clearRect(0, 0, c.width, c.height);
     plot();
@@ -742,163 +171,53 @@ function check() {
 
 <script>
 
-///////////////////////////
-///////////////////////////
-//                       // 
-//   GRAPH SECTION       //
-//                       //
-///////////////////////////
-///////////////////////////
-
-    var canvas = document.getElementById("a");
-    var context = canvas.getContext("2d");
-
-    var startX = -32;
-    var startY = -32;
-    var endX = 32;
-    var endY = 32;
-
-    var     stepX = (endX-startX)/10000;
-
-    var ZoomInMatrix = [[2,0],[0,2]];
-    var ZoomOutMatrix = [[0.5,0],[0,0.5]];
-    var IdentityMatrix = [[1,0],[0,1]];
-    var matrix = [[1,0],[0,1]];
-
-    function axisX(startX, startY, endX, endY) {
-
-        context.strokeStyle = '#000000';
-
-        context.beginPath();
-            context.moveTo(canvas.width/2, 0);
-            context.lineTo(canvas.width/2, canvas.height);
-            context.stroke();   
-
-        context.beginPath();
-            context.moveTo(0, canvas.height/2);
-            context.lineTo(canvas.width, canvas.height/2);
-            context.stroke();   
-
-    }
-
-    function func(x) {
-        return rootFunc.calculate(x, null);
-    }
-
-    function graph() {
-
-        context.strokeStyle = '#ff0000';
-
-        var x;
-    
-        for (x=startX; x<endX; x+=stepX) {
-
-            startPoint = getScreenPoint(x, func(x));
-            endPoint = getScreenPoint(x+stepX, func(x+stepX));
-
-            context.beginPath();
-                context.moveTo(startPoint[0],startPoint[1]);
-                context.lineTo(endPoint[0], endPoint[1]);
-                context.stroke();   
-            context.closePath();
-        }
-    }
-
-    function getScreenPoint(x, y) {
-
-        var TwoDimResult = new Array();
-        TwoDimResult[0]=x;
-        TwoDimResult[1]=y;
-
-        TwoDimResult = transform(TwoDimResult);
-        TwoDimResult = mapToScreen(TwoDimResult);
-
-        return TwoDimResult;
-
-    }
-
-    function transform (origPoint) {
-
-        resultPoint = new Array();
-
-        resultPoint[0] = origPoint[0]*matrix[0][0];
-        resultPoint[0] += origPoint[1]*matrix[0][1];
-        
-        resultPoint[1] = origPoint[0]*matrix[1][0];
-        resultPoint[1] += origPoint[1]*matrix[1][1];       
-        
-        return resultPoint;
-
-    }
-
-    // Multiplies two matrixes
-    
-    function multiplyMatrixes(firstMatrix, secondMatrix) {
-
-        resultMatrix = new Array();
-
-        resultMatrix[0] = new Array();
-        resultMatrix[1] = new Array();
-
-        var i;
-        var j;
-
-        for (i=0; i<2; i++) {
-            for (j=0; j<2; j++) {
-                resultMatrix[i][j] = firstMatrix[i][0]*secondMatrix[0][j];
-                resultMatrix[i][j] += firstMatrix[i][1]*secondMatrix[1][j];
-            }
-        }
-
-        return resultMatrix;
-
-    }
-
-    // Maps graph point to screen coordinates
-
-    function mapToScreen(point) {
-
-        var mappedPoint = new Array();
-
-        var A1 = canvas.width/(endX-startX);
-        var B1 = -A1 * startX;
-
-        var A2 = canvas.height/(startY-endY);
-        var B2 = -A2 * endY;
-
-        mappedPoint[0] = A1*point[0] + B1;
-        mappedPoint[1] = A2*point[1] + B2;
-
-        return mappedPoint;
-
-    }
-
-
     function clearGraph() {
         //context.clearRect(canvas.offsetLeft, canvas.offsetTop, canvas.width, canvas.height);
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    function graph() {
+        //graph2D();
+        graph3D();
+    }
+
+    function multiplyMatrixes(a, b) {
+//        return multiplyMatrixes2D(a, b);
+        return multiplyMatrixes3D(a, b);
+    }
+
+    function restore(a, b) {
+        //matrix2D = identityMatrix2D;
+        matrix3D = identityMatrix3D;
+        graph();
+    }
+
+    function zoomIn(a, b) {
+        matrix3D = multiplyMatrixes(matrix3D,ZoomInMatrix3D);
+        graph();
+    }
+
+    function zoomOut(a, b) {
+        matrix3D = multiplyMatrixes(matrix3D,ZoomOutMatrix3D);
+        graph();
+    }
+
+
 </script>
 
 
 <br>
-<div align="left">
-    <button><h1>y(x)</h1></button>
-    <button><h1>x(t), y(t)</h1></button>
-    <button><h1>x(t), y(t), z(t)</h1></button>
-    <button><h1>ρ(φ)</h1></button>
-    <button><h1>z(x,y)</h1></button>
-    <button><h1>ρ(θ,φ)</h1></button>
-    <button><h1>ρ(φ,h)</h1></button>
-</div>
+
 
 <div align="left">
 
     <button onClick="javascript:setMultiply();"><h2>?×?</h2></button>
     <button onClick="javascript:setDivide();"><h2>?/?</h2></button>
     <button onClick="javascript:setAdd();"><h2>?+?</h2></button>
-    <button onClick="javascript:setVarX();"><h2>X</h2></button>
+    <button onClick="javascript:setVarX('x');"><h2>x</h2></button>
+    <button onClick="javascript:setVarX('θ');"><h2>θ</h2></button>
+    <button onClick="javascript:setVarY('y');"><h2>y</h2></button>
+    <button onClick="javascript:setVarY('φ');"><h2>φ</h2></button>
     <button onClick="javascript:setConst(-1);"><h2>-1</h2></button>
     <button onClick="javascript:setConst(1);"><h2>1</h2></button>
     <button onClick="javascript:setConst(2);"><h2>2</h2></button>
@@ -906,11 +225,19 @@ function check() {
     <button onClick="javascript:setSquare();"><h2>(?²)</h2></button>
     <button onClick="javascript:setSinus();"><h2>sin(?)</h2></button>
 
+    <button style="background-color:red;color:white" onClick="javascript:checkLayout();"><h2>Check</h2></button>
+
     <button onClick="javascript:graph();"><h2>Graph</h2></button>
     <button onClick="javascript:clearGraph();"><h2>Clear</h2></button>
-    <button onClick="javascript:matrix = multiplyMatrixes(matrix,ZoomInMatrix);graph();"><h2>Zoom In</h2></button>
-    <button onClick="javascript:matrix = multiplyMatrixes(matrix,ZoomOutMatrix);graph();"><h2>Zoom Out</h2></button>
-    <button onClick="javascript:matrix = IdentityMatrix;graph();"><h2>Restore</h2></button>
+    <button onClick="javascript:zoomIn();"><h2>Zoom In</h2></button>
+    <button onClick="javascript:zoomOut();"><h2>Zoom Out</h2></button>
+
+    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotX);graph();"><h2>X</h2></button>
+    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotY);graph();"><h2>Y</h2></button>
+    <button onClick="javascript:matrix3D = multiplyMatrixes(matrix3D,matrixRotZ);graph();"><h2>Z</h2></button>
+
+
+    <button onClick="javascript:restore();"><h2>Restore</h2></button>
 
 </div>
 <span id="check"></span>
