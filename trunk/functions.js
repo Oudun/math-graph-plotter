@@ -235,6 +235,18 @@ function ROOT_FUNCTION_SPHERIC() {
 
 ROOT_FUNCTION_SPHERIC.prototype = new ROOT_FUNCTION();
 
+function ROOT_FUNCTION_RECT3D() {
+
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+        var marginX = (this.width()- ctx.measureText("z(x,y)=").width -this.arg.width()-gapX)/2;
+        this.argOffsetX = marginX + ctx.measureText("z(x,y)=").width + gapX;
+        this.argOffsetY = (this.height()-this.arg.height())/2;
+        ctx.fillText("z(x,y)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
+    }
+
+}
+
+ROOT_FUNCTION_RECT3D.prototype = new ROOT_FUNCTION();
 
 ///////////////////////////////
 //                           //

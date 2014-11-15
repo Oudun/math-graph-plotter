@@ -38,11 +38,37 @@ ctx.font = fullSizeFont;
 canvas = document.getElementById("a");
 context = canvas.getContext("2d");
 
+
+    var  startX = -2;
+    var  endX = 2;
+
+    var  startY = -2;
+    var  endY = 2;
+
+    var  startZ = -2;
+    var  endZ = 2;
+
+    var gran = 16;
+    var granPhi = 32;
+    var granTheta = 16;
+
+    var stepX = (endX-startX)/gran;
+    var stepY = (endY-startY)/gran;
+
+    var startTheta = -Math.PI/2;
+    var endTheta = Math.PI/2;
+
+    var startPhi = 0;
+    var endPhi = 2*Math.PI;
+
+    var stepTheta = (endTheta-startTheta)/granTheta;
+    var stepPhi = (endPhi-startPhi)/granPhi;
+
+
 </script>
 
 <script src="graph2d.js"></script>
 <script src="graph3d.js"></script>
-
 
 <script>
 
@@ -200,7 +226,6 @@ function checkMatrix(a) {
     }
 
     function to2D() {
-        graph = graph2D;
         identityMatrix = IdentityMatrix2D;
         multiplyMatrixes=multiplyMatrixes2D;
         matrix = matrix2D;
@@ -212,7 +237,6 @@ function checkMatrix(a) {
     }
 
     function to3D() {
-        graph = graph3D;
         identityMatrix = identityMatrix3D;
         multiplyMatrixes = multiplyMatrixes3D;
         matrix = matrix3D;
@@ -224,6 +248,7 @@ function checkMatrix(a) {
     }
 
     function toRect2() {
+        graph = graph2D;
         document.all["x"].style.display='inline';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
@@ -238,15 +263,25 @@ function checkMatrix(a) {
     }
 
     function toRect3() {
+        graph = graphRect3D;
         document.all["x"].style.display='inline';
         document.all["y"].style.display='inline';
         document.all["theta"].style.display='none';
         document.all["phi"].style.display='none';
         document.all["t"].style.display='none';
         document.all["h"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION_RECT3D();
+        rootFunc.arg = new ADD();
+        rootFunc.arg.argFirst = new SQUARE();
+        rootFunc.arg.argSecond = new SQUARE();
+        rootFunc.arg.argFirst.arg = new VARX("x");
+        rootFunc.arg.argSecond.arg = new VARY("y");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();        
     }
 
     function toPolar() {
+        graph = graph2D;//todo - replace
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
@@ -256,6 +291,7 @@ function checkMatrix(a) {
     }
 
     function toParam2() {
+        graph = graph2D;//todo - replace
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
@@ -265,6 +301,7 @@ function checkMatrix(a) {
     }
 
     function toParam3() {
+        graph = graphSpheric;//replace
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
@@ -274,6 +311,7 @@ function checkMatrix(a) {
     }
 
     function toSpheric() {
+        graph = graphSpheric;
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='inline';
@@ -289,6 +327,7 @@ function checkMatrix(a) {
     }
 
     function toCylindric() {
+        graph = graphSpheric;//replace
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
@@ -342,5 +381,6 @@ function checkMatrix(a) {
 
 </body>
 </html>
+
 
 
