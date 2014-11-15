@@ -1,20 +1,13 @@
 
-	var	startX = -2;
-	var	endX = 2;
+	// var	startX = -2;
+	// var	endX = 2;
 
-	var	startY = -1.5;
-	var	endY = 1.5;
+	// var	startY = -2;
+	// var	endY = 2;
 
-	var	startTheta = -Math.PI/2;
-	var	endTheta = Math.PI/2;
+	// var stepX = (endX-startX)/200;
+	// var stepY = (endY-startY)/200;
 
-	var	startPhi = 0;
-	var	endPhi = 2*Math.PI;
-
-	var gran = 32;
-
-	var stepTheta = (endTheta-startTheta)/gran;
-	var stepPhi = (endPhi-startPhi)/gran;
 
 	var	matrix3D = [[1,0,0],[0,1,0],[0,0,1]];
 	
@@ -60,63 +53,13 @@
 	matrixRotY[2][2] = Math.cos(rotationStep);
 
 
-	var	matrixRotX = new Array();
-	
-	matrixRotX[0] = new Array();
-	matrixRotX[1] = new Array();
-	matrixRotX[2] = new Array();
+	var	matrixRotX = [
+	[1,	0,						0],
+	[0,	Math.cos(rotationStep),	-Math.sin(rotationStep)],
+	[0,	Math.sin(rotationStep),	Math.cos(rotationStep)]];
 
-	matrixRotX[0][0] = 1;
-	matrixRotX[0][1] = 0;
-	matrixRotX[0][2] = 0;
-
-	matrixRotX[1][0] = 0;
-	matrixRotX[1][1] = Math.cos(rotationStep);
-	matrixRotX[1][2] = -Math.sin(rotationStep);
-
-	matrixRotX[2][0] = 0;
-	matrixRotX[2][1] = Math.sin(rotationStep);
-	matrixRotX[2][2] = Math.cos(rotationStep);
-
-
-	var	ZoomInMatrix3D = new Array();
-	
-	ZoomInMatrix3D[0] = new Array();
-	ZoomInMatrix3D[1] = new Array();
-	ZoomInMatrix3D[2] = new Array();
-
-	ZoomInMatrix3D[0][0] = 1.25;
-	ZoomInMatrix3D[0][1] = 0;
-	ZoomInMatrix3D[0][2] = 0;
-
-	ZoomInMatrix3D[1][0] = 0;
-	ZoomInMatrix3D[1][1] = 1.25;
-	ZoomInMatrix3D[1][2] = 0;
-
-	ZoomInMatrix3D[2][0] = 0;
-	ZoomInMatrix3D[2][1] = 0;
-	ZoomInMatrix3D[2][2] = 1.25;
-
-
-	var	ZoomOutMatrix3D = new Array();
-	
-	ZoomOutMatrix3D[0] = new Array();
-	ZoomOutMatrix3D[1] = new Array();
-	ZoomOutMatrix3D[2] = new Array();
-
-	ZoomOutMatrix3D[0][0] = 0.8;
-	ZoomOutMatrix3D[0][1] = 0;
-	ZoomOutMatrix3D[0][2] = 0;
-
-	ZoomOutMatrix3D[1][0] = 0;
-	ZoomOutMatrix3D[1][1] = 0.8;
-	ZoomOutMatrix3D[1][2] = 0;
-
-	ZoomOutMatrix3D[2][0] = 0;
-	ZoomOutMatrix3D[2][1] = 0;
-	ZoomOutMatrix3D[2][2] = 0.8;
-
-
+	var	ZoomInMatrix3D = [[1.25,0,0],[0,1.25,0],[0,0,1.25]];
+	var	ZoomOutMatrix3D = [[0.8,0,0],[0,0.8,0],[0,0,0.8]];
 
 	function axis() {
 
@@ -125,41 +68,36 @@
 		var startPoint = new Array();
 		var endPoint = new Array();
 
-		startPoint = getScreenPoint(0, 0, 0);
-		endPoint = getScreenPoint(0, 0, 1.5);
+		startPoint = getScreenPointSpheric(0, 0, 0);
+		endPoint = getScreenPointSpheric(0, 0, endX);
 
-		context.beginPath();
-      		context.moveTo(startPoint[0],startPoint[1]);
-	      	context.lineTo(endPoint[0], endPoint[1]);
-		context.stroke();	
-		context.closePath();
+		line (startPoint, endPoint);
 
 		context.fillText("X", endPoint[0], endPoint[1]);
 
-		startPoint = getScreenPoint(0, 0, 0);
-		endPoint = getScreenPoint(0, Math.PI/2, 1.5);
+		startPoint = getScreenPointSpheric(0, 0, 0);
+		endPoint = getScreenPointSpheric(0, Math.PI/2, endX);
 
-		context.beginPath();
-      		context.moveTo(startPoint[0],startPoint[1]);
-	      	context.lineTo(endPoint[0], endPoint[1]);
-		context.stroke();	
-		context.closePath();
+		line (startPoint, endPoint);
 
 		context.fillText("Y", endPoint[0], endPoint[1]);
 
-		startPoint = getScreenPoint(0, 0, 0);
-		endPoint = getScreenPoint(Math.PI/2, 0, 1.5);
-
-		context.beginPath();
-      		context.moveTo(startPoint[0],startPoint[1]);
-	      	context.lineTo(endPoint[0], endPoint[1]);
-		context.stroke();	
-		context.closePath();
+		startPoint = getScreenPointSpheric(0, 0, 0);
+		endPoint = getScreenPointSpheric(Math.PI/2, 0, endX);
+		
+		line (startPoint, endPoint);
 
 		context.fillText("Z", endPoint[0], endPoint[1]);
 
 	}
 
+	function line(a, b) {
+		context.beginPath();
+      		context.moveTo(a[0],a[1]);
+	      	context.lineTo(b[0], b[1]);
+		context.stroke();	
+		context.closePath();
+	}
 
 	function funcSperic(theta, phi) {
 
@@ -177,16 +115,21 @@
 
 	}
 
+	function funcRect3D(x, y) {
+
+		result = rootFunc.calculate(x, y);
+		return result;
+
+	}
+
+
 	var startPoint = new Array();
 	var endPoint = new Array();
 
-	function graph3D() {
-
+	function graphSpheric() {
 
 		context.clearRect(0, 0, canvas.width, canvas.height); 
-
 		axis();
-
 		context.strokeStyle = 'RED';
 
 		var theta;
@@ -195,14 +138,9 @@
 		for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
 			for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
 
-				startPoint = getScreenPoint(theta, phi, funcSperic(theta,phi));
-				endPoint = getScreenPoint(theta, phi+stepPhi, funcSperic(theta, phi+stepPhi));
-
-				context.beginPath();
-		      		context.moveTo(startPoint[0],startPoint[1]);
-			      	context.lineTo(endPoint[0], endPoint[1]);
-      				context.stroke();	
-				context.closePath();
+				startPoint = getScreenPointSpheric(theta, phi, funcSperic(theta,phi));
+				endPoint = getScreenPointSpheric(theta, phi+stepPhi, funcSperic(theta, phi+stepPhi));
+				line (startPoint, endPoint);
 
 			}
 		}
@@ -213,15 +151,51 @@
 		for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
 			for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
 
-				startPoint = getScreenPoint(theta, phi, funcSperic(theta,phi));
-				endPoint = getScreenPoint(theta+stepTheta, phi, funcSperic(theta+stepTheta, phi));
+				startPoint = getScreenPointSpheric(theta, phi, funcSperic(theta,phi));
+				endPoint = getScreenPointSpheric(theta+stepTheta, phi, funcSperic(theta+stepTheta, phi));
+				line (startPoint, endPoint);
 
-				context.beginPath();
-		      		context.moveTo(startPoint[0],startPoint[1]);
-			      	context.lineTo(endPoint[0], endPoint[1]);
-      				context.stroke();	
-				context.closePath();
+			}
+		}
 
+
+
+
+	}
+
+
+		function graphRect3D() {
+
+		console.log("graphRect3D startX="+startX+" endX="+endX);
+
+		context.clearRect(0, 0, canvas.width, canvas.height); 
+		axis();
+		context.strokeStyle = 'RED';
+
+		var theta;
+		var phi;
+
+		for (x=startX; x<endX; x+=stepX) {
+			for (y=startY; y<endY; y+=stepY) {
+
+				startPoint = getScreenPointRect3D(x, y, funcRect3D(x,y));
+				endPoint = getScreenPointRect3D(x+stepX, y, funcRect3D(x+stepX,y));
+				console.log("("+startPoint[0]+", "+startPoint[1]+") to ("+endPoint[0]+", "+endPoint[1]+")");
+				line (startPoint, endPoint);
+
+			}
+		}
+
+		context.strokeStyle = 'GREEN';
+
+		for (y=startY; y<endY; y+=stepY) {
+			for (x=startX; x<endX; x+=stepX) {
+
+				console.log("2: X="+x+" Y="+y+" Z="+funcRect3D(x,y));
+
+				startPoint = getScreenPointRect3D(x, y, funcRect3D(x,y));
+				endPoint = getScreenPointRect3D(x, y+stepY, funcRect3D(x,y+stepY));
+				line (startPoint, endPoint);
 
 			}
 		}
@@ -235,12 +209,30 @@
 
 	// Transforms point defined by spheric coordinates into screen point
 
-	function getScreenPoint(theta, phi, rad) {
+	function getScreenPointSpheric(theta, phi, rad) {
 
 		var ThreeDimResult = new Array();
 		var TwoDimResult = new Array();
 
 		ThreeDimResult = translateToRect(theta, phi, rad);
+		ThreeDimResult = transform3D(ThreeDimResult);
+		TwoDimResult = project(ThreeDimResult);
+		TwoDimResult = mapToScreen(TwoDimResult);
+
+		return TwoDimResult;
+
+	}
+
+	// Transforms point defined by 3D rectangular coordinates into screen point
+
+	function getScreenPointRect3D(x, y, z) {
+
+		var ThreeDimResult = new Array();
+		ThreeDimResult[0]=x;
+		ThreeDimResult[1]=y;
+		ThreeDimResult[2]=z;
+		var TwoDimResult = new Array();
+
 		ThreeDimResult = transform3D(ThreeDimResult);
 		TwoDimResult = project(ThreeDimResult);
 		TwoDimResult = mapToScreen(TwoDimResult);

@@ -6,12 +6,10 @@
 ///////////////////////////
 ///////////////////////////
 
-    var startX = -32;
-    var startY = -32;
-    var endX = 32;
-    var endY = 32;
-
-    var stepX = (endX-startX)/10000;
+    // var startX = -32;
+    // var startY = -32;
+    // var endX = 32;
+    // var endY = 32;
 
     var ZoomInMatrix2D = [[2,0],[0,2]];
     var ZoomOutMatrix2D = [[0.5,0],[0,0.5]];
