@@ -4,10 +4,34 @@
     <style>
         .formulaType {
             font-family: Arial; 
-//            font-style:italic;
             font-size:18pt;
             font-weight:bold;
         }
+
+        .argButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+        }
+
+        .checkButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+            background-color:red;
+            color:white;
+        }
+
+         .commandButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+            background-color:grey;
+            color:white;
+        }
+
+
+
     </style>
     <script>
 
@@ -17,12 +41,14 @@
 <body>
 <span align="left">
     <button class="formulaType" onClick="javascript:to2D();toRect2();">y(x)</button>
-    <button class="formulaType" onClick="javascript:to2D();toParam2();">x(t), y(t</button>
+<!--
+    <button class="formulaType" onClick="javascript:to2D();toParam2();">x(t), y(t)</button>
     <button class="formulaType" onClick="javascript:to3D();toParam3();">x(t), y(t), z(t)</button>
     <button class="formulaType" onClick="javascript:to2D();toPolar();">ρ(φ)</button>
+-->
     <button class="formulaType" onClick="javascript:to3D();toRect3();">z(x,y)</button>
     <button class="formulaType" onClick="javascript:to3D();toSpheric();">ρ(θ,φ)</button>
-    <button class="formulaType" onClick="javascript:to3D();toCylindric();">ρ(φ,h)</button>
+    <button class="formulaType" onClick="javascript:to3D();toCylindric();">ρ(h,φ)</button>
 </span>
 <br>
 <canvas id="c" style="padding-top:5" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
@@ -54,6 +80,7 @@ context = canvas.getContext("2d");
 
     var stepX = (endX-startX)/gran;
     var stepY = (endY-startY)/gran;
+    var stepZ = (endZ-startZ)/gran;
 
     var startTheta = -Math.PI/2;
     var endTheta = Math.PI/2;
@@ -118,6 +145,15 @@ function setAdd() {
     plot();
 }
 
+function setDiff() {
+    var child = new DIFF();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
 function setDivide() {
     var child = new DIV();
     child.argFirst = new CONST("?");
@@ -166,6 +202,14 @@ function setSquare() {
 
 function setSinus() {
     var child = new SIN();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setCosinus() {
+    var child = new COS();
     child.arg = new CONST("?");
     rootFunc.replaceChild(selectedId, child);
     ctx.clearRect(0, 0, c.width, c.height);
@@ -327,13 +371,34 @@ function checkMatrix(a) {
     }
 
     function toCylindric() {
-        graph = graphSpheric;//replace
+        graph = graphCylindric;
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
         document.all["phi"].style.display='inline';
         document.all["t"].style.display='none';
         document.all["h"].style.display='inline';
+        rootFunc =  new ROOT_FUNCTION_CYLINDRIC();
+        rootFunc.arg = new CONST(1);
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+    }
+
+    function changeGran (n) {
+        if(n*gran>64) {
+            alert("Too smooth, sorry");
+        } else if (n*gran<4) {
+            alert("Too rought, sorry");
+        } else {
+            gran=n*gran;
+            granPhi=n*granPhi;
+            granTheta=n*granTheta;
+            stepX = (endX-startX)/gran;
+            stepY = (endY-startY)/gran;
+            stepZ = (endZ-startZ)/gran;
+            stepTheta = (endTheta-startTheta)/granTheta;
+            stepPhi = (endPhi-startPhi)/granPhi;        
+        }
     }
 
 </script>
@@ -342,35 +407,40 @@ function checkMatrix(a) {
 
 <div align="left">
 
-    <button onClick="javascript:setMultiply();"><h2>?×?</h2></button>
-    <button onClick="javascript:setDivide();"><h2>?/?</h2></button>
-    <button onClick="javascript:setAdd();"><h2>?+?</h2></button>
-    <button id="x"      onClick="javascript:setVarX('x');"><h2>x</h2></button>
-    <button id="y"      onClick="javascript:setVarY('y');"><h2>y</h2></button>
-    <button id="theta"  onClick="javascript:setVarX('θ');"><h2>θ</h2></button>
-    <button id="phi"    onClick="javascript:setVarY('φ');"><h2>φ</h2></button>
-    <button id="t"      onClick="javascript:setVarX('t');"><h2>t</h2></button>
-    <button id="h"      onClick="javascript:setVarY('h');"><h2>h</h2></button>
-    <button onClick="javascript:setConst(-1);"><h2>-1</h2></button>
-    <button onClick="javascript:setConst(1);"><h2>1</h2></button>
-    <button onClick="javascript:setConst(2);"><h2>2</h2></button>
-    <button onClick="javascript:setBrackets();"><h2>(?)</h2></button>
-    <button onClick="javascript:setSquare();"><h2>(?²)</h2></button>
-    <button onClick="javascript:setSinus();"><h2>sin(?)</h2></button>
+    <button class="argButton" onClick="javascript:setMultiply();">?×?</button>
+    <button class="argButton" onClick="javascript:setDivide();">?/?</button>
+    <button class="argButton" onClick="javascript:setAdd();">?+?</button>
+    <button class="argButton" onClick="javascript:setDiff();">?-?</button>
+    <button class="argButton" id="x"      onClick="javascript:setVarX('x');">x</button>
+    <button class="argButton" id="y"      onClick="javascript:setVarY('y');">y</button>
+    <button class="argButton" id="theta"  onClick="javascript:setVarX('θ');">θ</button>
+    <button class="argButton" id="phi"    onClick="javascript:setVarY('φ');">φ</button>
+    <button class="argButton" id="t"      onClick="javascript:setVarX('t');">t</button>
+    <button class="argButton" id="h"      onClick="javascript:setVarX('h');">h</button>
+    <button class="argButton" onClick="javascript:setConst(-1);">-1</button>
+    <button class="argButton" onClick="javascript:setConst(1);">1</button>
+    <button class="argButton" onClick="javascript:setConst(2);">2</button>
+    <button class="argButton" onClick="javascript:setBrackets();">(?)</button>
+    <button class="argButton" onClick="javascript:setSquare();">(?²)</button>
+    <button class="argButton" onClick="javascript:setSinus();">sin(?)</button>
+    <button class="argButton" onClick="javascript:setCosinus();">cos(?)</button>
 
-    <button style="background-color:red;color:white" onClick="javascript:check();"><h2>Check</h2></button>
+    <button class="checkButton" style="background-color:red;color:white" onClick="javascript:alert(matrix);">Check</button>
 
-    <button onClick="javascript:graph();"><h2>Graph</h2></button>
-    <button onClick="javascript:clearGraph();"><h2>Clear</h2></button>
-    <button onClick="javascript:zoomIn();"><h2>Zoom In</h2></button>
-    <button onClick="javascript:zoomOut();"><h2>Zoom Out</h2></button>
+    <button class="commandButton" onClick="javascript:graph();">Graph</button>
+    <button class="commandButton" onClick="javascript:clearGraph();">Clear</button>
+    <button class="commandButton" onClick="javascript:zoomIn();">Zoom In</button>
+    <button class="commandButton" onClick="javascript:zoomOut();">Zoom Out</button>
 
-    <button id="rotx" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotX);graph();"><h2>X Rotation</h2></button>
-    <button id="roty" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotY);graph();"><h2>Y Rotation</h2></button>
-    <button id="rotz" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotZ);graph();"><h2>Z Rotation</h2></button>
+    <button class="commandButton" id="rotx" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotX);graph();">X Rot</button>
+    <button class="commandButton" id="roty" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotY);graph();">Y Rot</button>
+    <button class="commandButton" id="rotz" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotZ);graph();">Z Rot</button>
+
+    <button class="commandButton" id="rougher" onClick="changeGran(1/2);graph();">Rougher</button>
+    <button class="commandButton" id="smoother" onClick="changeGran(2);graph();">Smoother</button>
 
 
-    <button onClick="javascript:restore();"><h2>Restore</h2></button>
+    <button class="commandButton" onClick="javascript:restore();">Restore</button>
 
 </div>
 
@@ -381,6 +451,8 @@ function checkMatrix(a) {
 
 </body>
 </html>
+
+
 
 
 

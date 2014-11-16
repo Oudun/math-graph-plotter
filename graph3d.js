@@ -8,10 +8,17 @@
 	// var stepX = (endX-startX)/200;
 	// var stepY = (endY-startY)/200;
 
+	var sqrthalf = Math.sqrt(2)/2;
 
-	var	matrix3D = [[1,0,0],[0,1,0],[0,0,1]];
+	var izometricMatrix = [
+	[sqrthalf, 	-sqrthalf, 0],
+	[-1/2, 		-1/2,		sqrthalf],
+	[1/2,		-1/2,		-sqrthalf]
+	];
+
+	var	matrix3D = izometricMatrix;//[[1,0,0],[0,1,0],[0,0,1]];
 	
-	var identityMatrix3D = [[1,0,0],[0,1,0],[0,0,1]];
+	var identityMatrix3D = izometricMatrix;//[[1,0,0],[0,1,0],[0,0,1]];
 
 	var rotationStep = Math.PI/12;
 
@@ -99,6 +106,20 @@
 		context.closePath();
 	}
 
+	function funcCylindric(h, phi) {
+
+		var result;
+
+		result = rootFunc.calculate(h, phi);
+
+		if (result < 0) {
+			result = 0;
+		}
+
+		return result;
+
+	}
+
 	function funcSperic(theta, phi) {
 
 		var result;
@@ -126,6 +147,8 @@
 	var startPoint = new Array();
 	var endPoint = new Array();
 
+//graphSpheric
+
 	function graphSpheric() {
 
 		context.clearRect(0, 0, canvas.width, canvas.height); 
@@ -135,8 +158,8 @@
 		var theta;
 		var phi;
 
-		for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
-			for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
+		for (theta=startTheta; theta<=endTheta; theta+=stepTheta) {
+			for (phi=startPhi; phi<=endPhi; phi+=stepPhi) {
 
 				startPoint = getScreenPointSpheric(theta, phi, funcSperic(theta,phi));
 				endPoint = getScreenPointSpheric(theta, phi+stepPhi, funcSperic(theta, phi+stepPhi));
@@ -148,8 +171,8 @@
 
 		context.strokeStyle = 'GREEN';
 
-		for (phi=startPhi; phi<endPhi; phi+=stepPhi) {
-			for (theta=startTheta; theta<endTheta; theta+=stepTheta) {
+		for (phi=startPhi; phi<=endPhi; phi+=stepPhi) {
+			for (theta=startTheta; theta<=endTheta; theta+=stepTheta) {
 
 				startPoint = getScreenPointSpheric(theta, phi, funcSperic(theta,phi));
 				endPoint = getScreenPointSpheric(theta+stepTheta, phi, funcSperic(theta+stepTheta, phi));
@@ -157,14 +180,48 @@
 
 			}
 		}
+	}
 
+//graphCylindric
 
+	function graphCylindric() {
 
+		context.clearRect(0, 0, canvas.width, canvas.height); 
+		axis();
+		context.strokeStyle = 'RED';
+
+		var h;
+		var phi;
+
+		for (h=startZ; h<=endZ; h+=stepZ) {
+			for (phi=startPhi; phi<=endPhi; phi+=stepPhi) {
+
+				startPoint = getScreenPointCylindric(h, phi, funcCylindric(h, phi));
+				endPoint = getScreenPointCylindric(h, phi+stepPhi, funcCylindric(h, phi+stepPhi));
+				line (startPoint, endPoint);
+
+			}
+		}
+
+		context.strokeStyle = 'GREEN';
+
+	for (phi=startPhi; phi<=endPhi; phi+=stepPhi) {
+		for (h=startZ; h<=endZ; h+=stepZ) {
+
+				startPoint = getScreenPointCylindric(h, phi, funcCylindric(h, phi));
+				endPoint = getScreenPointCylindric(h+stepZ, phi, funcCylindric(h+stepZ, phi));
+				line (startPoint, endPoint);
+
+			}
+		}
 
 	}
 
 
-		function graphRect3D() {
+//graphCylindric
+
+
+	function graphRect3D() {
 
 		console.log("graphRect3D startX="+startX+" endX="+endX);
 
@@ -175,8 +232,8 @@
 		var theta;
 		var phi;
 
-		for (x=startX; x<endX; x+=stepX) {
-			for (y=startY; y<endY; y+=stepY) {
+		for (x=startX; x<=endX; x+=stepX) {
+			for (y=startY; y<=endY; y+=stepY) {
 
 				startPoint = getScreenPointRect3D(x, y, funcRect3D(x,y));
 				endPoint = getScreenPointRect3D(x+stepX, y, funcRect3D(x+stepX,y));
@@ -188,8 +245,8 @@
 
 		context.strokeStyle = 'GREEN';
 
-		for (y=startY; y<endY; y+=stepY) {
-			for (x=startX; x<endX; x+=stepX) {
+		for (y=startY; y<=endY; y+=stepY) {
+			for (x=startX; x<=endX; x+=stepX) {
 
 				console.log("2: X="+x+" Y="+y+" Z="+funcRect3D(x,y));
 
@@ -205,6 +262,22 @@
 
 	}
 
+
+	// Transforms point defined by spheric coordinates into screen point
+
+	function getScreenPointCylindric(h, phi, rad) {
+
+		var ThreeDimResult = new Array();
+		var TwoDimResult = new Array();
+
+		ThreeDimResult = translateCylindricToRect(h, phi, rad);
+		ThreeDimResult = transform3D(ThreeDimResult);
+		TwoDimResult = project(ThreeDimResult);
+		TwoDimResult = mapToScreen(TwoDimResult);
+
+		return TwoDimResult;
+
+	}
 
 
 	// Transforms point defined by spheric coordinates into screen point
@@ -240,6 +313,23 @@
 		return TwoDimResult;
 
 	}
+
+
+	// Translates three speric coordinates into rectangular 
+	// coordinates
+
+	function translateCylindricToRect(h, phi, rad) {
+
+		var rectPoint = new Array();
+
+		rectPoint[0] = rad*Math.cos(phi);
+		rectPoint[1] = rad*Math.sin(phi);
+		rectPoint[2] = h;
+
+		return rectPoint;
+
+	}
+
 
 
 	// Translates three speric coordinates into rectangular 

@@ -223,17 +223,26 @@ function ROOT_FUNCTION () {
 ROOT_FUNCTION.prototype = new ONE_ARG_FUNCTION();
 
 function ROOT_FUNCTION_SPHERIC() {
-
     this.innerPlot = function(offsetX, offsetY, ctx) {
         var marginX = (this.width()- ctx.measureText("ρ(θ,φ)=").width -this.arg.width()-gapX)/2;
         this.argOffsetX = marginX + ctx.measureText("ρ(θ,φ)=").width + gapX;
         this.argOffsetY = (this.height()-this.arg.height())/2;
         ctx.fillText("ρ(θ,φ)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
     }
-
 }
 
 ROOT_FUNCTION_SPHERIC.prototype = new ROOT_FUNCTION();
+
+function ROOT_FUNCTION_CYLINDRIC () {
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+        var marginX = (this.width()- ctx.measureText("ρ(h,φ)=").width -this.arg.width()-gapX)/2;
+        this.argOffsetX = marginX + ctx.measureText("ρ(h,φ)=").width + gapX;
+        this.argOffsetY = (this.height()-this.arg.height())/2;
+        ctx.fillText("ρ(h,φ)=", marginX, baselineOffset+(this.height()-basicHeight)/2);
+    }
+}
+
+ROOT_FUNCTION_CYLINDRIC.prototype = new ROOT_FUNCTION();
 
 function ROOT_FUNCTION_RECT3D() {
 
@@ -363,6 +372,20 @@ function SIN () {
 
 SIN.prototype = new ONE_ARG_FUNCTION();
 
+function COS () {    
+
+    this.id = counter++;
+    this.text1 = "cos(";
+
+    this.calculate = function (x, y) {
+        return Math.cos(this.arg.calculate(x, y));
+    }
+
+}
+
+
+COS.prototype = new SIN();
+
 ////////////////////
 //                //
 //   DIVIDE       //
@@ -472,6 +495,7 @@ MUL.prototype = new TWO_ARGS_FUNCTION();
 function ADD() {
 
   this.id = counter++;
+  this.text = "+";
 
     this.innerPlot = function(offsetX, offsetY, ctx) {
 
@@ -480,8 +504,8 @@ function ADD() {
         this.firstOffsetX = this.offsetX;
         this.firstOffsetY = this.offsetY + ((maxHeight - this.argFirst.height()) / 2);
 
-        charX = ctx.measureText("+").width
-        ctx.fillText("+", offsetX + this.argFirst.width() + gapX, offsetY + baselineOffset + (this.height() - basicHeight)/2);
+        charX = ctx.measureText(this.text).width
+        ctx.fillText(this.text, offsetX + this.argFirst.width() + gapX, offsetY + baselineOffset + (this.height() - basicHeight)/2);
 
         this.secondOffsetX = this.offsetX + this.argFirst.width() + gapX + charX + gapX;
         this.secondOffsetY = this.offsetY + ((maxHeight - this.argSecond.height()) / 2)
@@ -493,7 +517,7 @@ function ADD() {
     }
 
     this.width = function () {
-        return this.argFirst.width() + gapX + charX + gapX + this.argSecond.width();
+        return this.argFirst.width() + gapX + ctx.measureText(this.text).width + gapX + this.argSecond.width();
     }
 
     this.height = function () {
@@ -503,6 +527,20 @@ function ADD() {
 }
 
 ADD.prototype = new TWO_ARGS_FUNCTION();
+
+function DIFF() {
+
+    this.id = counter++;
+    this.text = "-";
+
+    this.calculate = function (x, y) {
+        return this.argFirst.calculate(x, y) - this.argSecond.calculate(x, y);
+    }
+
+}
+
+DIFF.prototype = new ADD();
+
 
 ///////////////////
 //               //
