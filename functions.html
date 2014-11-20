@@ -64,6 +64,8 @@ ctx.font = fullSizeFont;
 canvas = document.getElementById("a");
 context = canvas.getContext("2d");
 
+    var  startT = -2;
+    var  endT = 2;
 
     var  startX = -2;
     var  endX = 2;
@@ -77,10 +79,12 @@ context = canvas.getContext("2d");
     var gran = 16;
     var granPhi = 32;
     var granTheta = 16;
+    var granT = 64;
 
     var stepX = (endX-startX)/gran;
     var stepY = (endY-startY)/gran;
     var stepZ = (endZ-startZ)/gran;
+    var stepT = (endT-startT)/granT;
 
     var startTheta = -Math.PI/2;
     var endTheta = Math.PI/2;
@@ -129,6 +133,15 @@ function selectFunction(event) {
 
 function setMultiply() {
     var child = new MUL();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setMultiplyShort() {
+    var child = new MUL2();
     child.argFirst = new CONST("?");
     child.argSecond = new CONST("?");
     rootFunc.replaceChild(selectedId, child);
@@ -261,11 +274,13 @@ function checkMatrix(a) {
 
     function zoomIn(a, b) {
         matrix = multiplyMatrixes(matrix,ZoomInMatrix);
+        clearGraph();
         graph();
     }
 
     function zoomOut(a, b) {
         matrix = multiplyMatrixes(matrix,ZoomOutMatrix);
+        clearGraph();
         graph();
     }
 
@@ -278,6 +293,8 @@ function checkMatrix(a) {
         document.all["rotx"].style.display='none';
         document.all["roty"].style.display='none';
         document.all["rotz"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
     }
 
     function to3D() {
@@ -289,6 +306,8 @@ function checkMatrix(a) {
         document.all["rotx"].style.display='inline';
         document.all["roty"].style.display='inline';
         document.all["rotz"].style.display='inline';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
     }
 
     function toRect2() {
@@ -299,6 +318,8 @@ function checkMatrix(a) {
         document.all["phi"].style.display='none';
         document.all["t"].style.display='none';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
         rootFunc =  new ROOT_FUNCTION();
         rootFunc.arg = new SIN();
         rootFunc.arg.arg = new VARX("x");
@@ -314,6 +335,8 @@ function checkMatrix(a) {
         document.all["phi"].style.display='none';
         document.all["t"].style.display='none';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
         rootFunc =  new ROOT_FUNCTION_RECT3D();
         rootFunc.arg = new ADD();
         rootFunc.arg.argFirst = new SQUARE();
@@ -332,19 +355,29 @@ function checkMatrix(a) {
         document.all["phi"].style.display='inline';
         document.all["t"].style.display='none';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
     }
 
     function toParam2() {
-        graph = graph2D;//todo - replace
+        graph = graphParam2D;//todo - replace
         document.all["x"].style.display='none';
         document.all["y"].style.display='none';
         document.all["theta"].style.display='none';
         document.all["phi"].style.display='none';
         document.all["t"].style.display='inline';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='inline';
+        document.all["longer"].style.display='inline';
         rootFunc = new ROOT_FUNCTION_2PARAM();
-        rootFunc.argFirst = new CONST(1);
-        rootFunc.argSecond = new CONST(1);
+        rootFunc.argFirst = new MUL();
+        rootFunc.argFirst.argFirst = new VARX("t");
+        rootFunc.argFirst.argSecond = new SIN();
+        rootFunc.argFirst.argSecond.arg = new VARX("t");
+        rootFunc.argSecond = new MUL();
+        rootFunc.argSecond.argFirst = new VARX("t");
+        rootFunc.argSecond.argSecond = new COS();
+        rootFunc.argSecond.argSecond.arg = new VARX("t");
         plot();
     }
 
@@ -356,6 +389,9 @@ function checkMatrix(a) {
         document.all["phi"].style.display='none';
         document.all["t"].style.display='inline';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='inline';
+        document.all["longer"].style.display='inline';
+
     }
 
     function toSpheric() {
@@ -366,6 +402,8 @@ function checkMatrix(a) {
         document.all["phi"].style.display='inline';
         document.all["t"].style.display='none';
         document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
         rootFunc =  new ROOT_FUNCTION_SPHERIC();
         rootFunc.arg = new SIN();
         rootFunc.arg.arg = new VARX("θ");
@@ -382,6 +420,8 @@ function checkMatrix(a) {
         document.all["phi"].style.display='inline';
         document.all["t"].style.display='none';
         document.all["h"].style.display='inline';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
         rootFunc =  new ROOT_FUNCTION_CYLINDRIC();
         rootFunc.arg = new CONST(1);
         ctx.clearRect(0, 0, c.width, c.height);
@@ -405,6 +445,19 @@ function checkMatrix(a) {
         }
     }
 
+    function changeLen (n) {
+        if(n*gran>32) {
+            alert("Too smooth, sorry");
+        } else if (n*gran<-32) {
+            alert("Too rought, sorry");
+        } else {
+            startT = n*startT;  
+            endT = n*endT;  
+            granT = n*granT;
+            stepT = (endT-startT)/granT;
+        }
+    }
+
 </script>
 
 <br>
@@ -412,6 +465,7 @@ function checkMatrix(a) {
 <div align="left">
 
     <button class="argButton" onClick="javascript:setMultiply();">?×?</button>
+    <button class="argButton" onClick="javascript:setMultiplyShort();">??</button>
     <button class="argButton" onClick="javascript:setDivide();">?/?</button>
     <button class="argButton" onClick="javascript:setAdd();">?+?</button>
     <button class="argButton" onClick="javascript:setDiff();">?-?</button>
@@ -443,6 +497,8 @@ function checkMatrix(a) {
     <button class="commandButton" id="rougher" onClick="changeGran(1/2);graph();">Rougher</button>
     <button class="commandButton" id="smoother" onClick="changeGran(2);graph();">Smoother</button>
 
+    <button class="commandButton" id="shorter" onClick="changeLen(1/2);graph();">Shorter</button>
+    <button class="commandButton" id="longer" onClick="changeLen(2);graph();">Longer</button>
 
     <button class="commandButton" onClick="javascript:restore();">Restore</button>
 
@@ -455,6 +511,7 @@ function checkMatrix(a) {
 
 </body>
 </html>
+
 
 
 

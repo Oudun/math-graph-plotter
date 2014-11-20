@@ -36,6 +36,36 @@
         return rootFunc.calculate(x, null);
     }
 
+    function funcX(t) {
+        return rootFunc.calculateX(t, null);
+    }
+    
+    function funcY(t) {
+        return rootFunc.calculateY(t, null);
+    }
+
+
+    function graphParam2D() {
+
+        context.strokeStyle = '#ff0000';
+
+        var t;
+    
+        for (t=startT; t<endT; t+=stepT) {
+
+            startPoint = getScreenPoint2D(funcX(t), funcY(t));
+            endPoint = getScreenPoint2D(funcX(t+stepT), funcY(t+stepT));
+
+            context.beginPath();
+                context.moveTo(startPoint[0],startPoint[1]);
+                context.lineTo(endPoint[0], endPoint[1]);
+                context.stroke();   
+            context.closePath();
+
+        }
+    }
+
+
     function graph2D() {
 
         context.strokeStyle = '#ff0000';

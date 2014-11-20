@@ -1,4 +1,4 @@
-var basicHeight = 64;
+var basicHeight = 32;
 var baselineOffset = basicHeight * (3/4);
 
 var charX = basicHeight/8;
@@ -531,6 +531,31 @@ ________________________________________________________________________
 }
 
 MUL.prototype = new TWO_ARGS_FUNCTION();
+
+function MUL2() {
+
+    this.id = counter++;
+
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+
+        var maxHeight = Math.max(this.argSecond.height(), this.argFirst.height());
+
+        this.firstOffsetX = this.offsetX;
+        this.firstOffsetY = this.offsetY + ((maxHeight - this.argFirst.height()) / 2);
+        this.secondOffsetX = this.offsetX + this.argFirst.width();
+        this.secondOffsetY = this.offsetY + ((maxHeight - this.argSecond.height()) / 2)
+
+    };
+
+
+    this.width = function () {
+        return this.argFirst.width() + this.argSecond.width();
+    }
+
+}
+
+MUL2.prototype = new MUL();
+
 
 ///////////////////
 //               //
