@@ -2,6 +2,7 @@
  <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <style>
+    
         .formulaType {
             font-family: Arial; 
             font-size:18pt;
@@ -30,8 +31,6 @@
             color:white;
         }
 
-
-
     </style>
     <script>
 
@@ -41,8 +40,9 @@
 <body>
 <span align="left">
     <button class="formulaType" onClick="javascript:to2D();toRect2();">y(x)</button>
-<!--
     <button class="formulaType" onClick="javascript:to2D();toParam2();">x(t), y(t)</button>
+
+<!--
     <button class="formulaType" onClick="javascript:to3D();toParam3();">x(t), y(t), z(t)</button>
     <button class="formulaType" onClick="javascript:to2D();toPolar();">ρ(φ)</button>
 -->
@@ -218,7 +218,7 @@ function setCosinus() {
 
 
 function plot() {
-    ctx.strokeRect(0, 0, c.width, c.height);
+    ctx.clearRect(0, 0, c.width, c.height);
     rootFunc.plot(32, 32, ctx);
 }
 
@@ -342,6 +342,10 @@ function checkMatrix(a) {
         document.all["phi"].style.display='none';
         document.all["t"].style.display='inline';
         document.all["h"].style.display='none';
+        rootFunc = new ROOT_FUNCTION_2PARAM();
+        rootFunc.argFirst = new CONST(1);
+        rootFunc.argSecond = new CONST(1);
+        plot();
     }
 
     function toParam3() {

@@ -1,4 +1,4 @@
-var basicHeight = 32;
+var basicHeight = 64;
 var baselineOffset = basicHeight * (3/4);
 
 var charX = basicHeight/8;
@@ -257,6 +257,7 @@ function ROOT_FUNCTION_RECT3D() {
 
 ROOT_FUNCTION_RECT3D.prototype = new ROOT_FUNCTION();
 
+
 ///////////////////////////////
 //                           //
 //   BRACKETS                //
@@ -430,6 +431,51 @@ function DIV () {
 
 DIV.prototype = new TWO_ARGS_FUNCTION();
 
+function ROOT_FUNCTION_2PARAM () {    
+
+    this.id = counter++;
+
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+
+        var marginX = (this.width() - ctx.measureText("y(x)=").width - gapX - Math.max(this.argFirst.width(),this.argSecond.width()))/2;
+        var marginY = (this.height()- this.argFirst.height() - gapY - this.argSecond.height())/2;
+
+        this.firstOffsetX = marginX + ctx.measureText("y(x)=").width + gapX;
+        this.firstOffsetY = marginY;
+        
+        this.secondOffsetX = marginX + ctx.measureText("y(x)=").width + gapX;
+        this.secondOffsetY = marginY + gapY + this.argFirst.height();
+
+        var A1 = this.argFirst.height() + (gapY/2);
+        var B1 = this.argSecond.height() + (gapY/2);
+
+        var A2 = (A1 - basicHeight)/2
+        var B2 = A1 + (B1 - basicHeight)/2
+
+        ctx.fillText("x(t)=", marginX, marginY + A2 + baselineOffset);
+        ctx.fillText("y(t)=", marginX, marginY + B2 + baselineOffset);
+
+    }
+
+    this.calculateX = function (x, y) {
+        return this.argFirst.calculate(x, y);
+    }
+
+    this.calculateY = function (x, y) {
+        return this.argSecond.calculate(x, y);
+    }
+
+    this.width = function () {
+        return c.width;
+    }
+
+    this.height = function () {
+        return c.height;
+    }
+
+}
+
+ROOT_FUNCTION_2PARAM.prototype = new TWO_ARGS_FUNCTION();
 
 ///////////////////
 //               //
