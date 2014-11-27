@@ -10,6 +10,7 @@ var counter = 0;
 var lineWidth = basicHeight/32;
 var showRect = false;
 
+var fullSizeFontNormal = "normal " + basicHeight + "px Georgia";
 var fullSizeFont = "italic " + basicHeight + "px Georgia";
 var halfSizeFont = "italic " + 2*basicHeight/3 + "px Georgia";
 var functions = new Array();
@@ -131,6 +132,81 @@ TWO_ARGS_FUNCTION.prototype.calculate = function (x, y) { return null;}
 TWO_ARGS_FUNCTION.prototype.width = function () {return null;}
 
 TWO_ARGS_FUNCTION.prototype.height = function () {return null;}
+
+
+///////////////////////////////
+//                           //
+//   THREE_ARGS_FUNCTION       //
+//                           //
+///////////////////////////////
+
+function THREE_ARGS_FUNCTION() {
+
+    this.id = counter++;
+    this.argFirst = null;
+    this.argSecond = null;
+    this.argThird = null;
+    this.offsetX = null;
+    this.offsetY = null;
+    this.firstOffsetX = null;
+    this.firstOffsetY = null;
+    this.secondOffsetX = null;
+    this.secondOffsetY = null;
+    this.thirdOffsetX = null;
+    this.thirdOffsetY = null;
+
+}    
+
+THREE_ARGS_FUNCTION.prototype.plot = function  (offsetX, offsetY, ctx) {
+
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    if (showRect) {ctx.strokeRect(offsetX, offsetY, this.width(), this.height());}
+
+    this.innerPlot(offsetX, offsetY, ctx);
+    this.argFirst.plot(this.firstOffsetX, this.firstOffsetY, ctx);
+    this.argSecond.plot(this.secondOffsetX, this.secondOffsetY, ctx);
+    this.argThird.plot(this.thirdOffsetX, this.thirdOffsetY, ctx);
+    functions[this.id] = this;
+
+}
+
+THREE_ARGS_FUNCTION.prototype.replaceChild = function(_id, func) {
+    if (this.argFirst.id==_id) {
+        this.argFirst.remove();
+        this.argFirst=func;
+    } else if (this.argSecond.id==_id) {
+        this.argSecond.remove();
+        this.argSecond=func;
+    } else if (this.argThird.id==_id) {
+        this.argThird.remove();
+        this.argThird=func;
+    } else {
+        this.argFirst.replaceChild(_id, func);
+        this.argSecond.replaceChild(_id, func);
+        this.argThird.replaceChild(_id, func);
+    }
+}
+
+THREE_ARGS_FUNCTION.prototype.remove = function() {
+    this.argFirst.remove();
+    this.argSecond.remove();
+    this.argThird.remove();
+    this.argFirst = null;
+    this.argSecond = null;
+    this.argThird = null;
+    functions[this.id] = null;
+}
+
+THREE_ARGS_FUNCTION.prototype.innerPlot = function (offsetX, offsetY, ctx) {};
+
+THREE_ARGS_FUNCTION.prototype.calculate = function (x, y) { return null;}
+
+THREE_ARGS_FUNCTION.prototype.width = function () {return null;}
+
+THREE_ARGS_FUNCTION.prototype.height = function () {return null;}
+
 
 ///////////////////////////////
 //                           //
@@ -257,6 +333,70 @@ function ROOT_FUNCTION_RECT3D() {
 
 ROOT_FUNCTION_RECT3D.prototype = new ROOT_FUNCTION();
 
+///////////////////////////////
+//                           //
+//   INTEGRAL                //
+//                           //
+///////////////////////////////
+
+
+
+function INTEGRAL () {
+
+    this.id = counter++;
+    this.text1 = "⌠";
+    this.text2 = "⌡";
+    this.text3 = "dx";
+        
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+
+        var int_width = Math.max(Math.max(this.argFirst.width(), this.argSecond.width()), ctx.measureText(this.text1).width);
+        var int_height = 2*basicHeight + this.argFirst.height() + this.argSecond.height();
+
+        this.firstOffsetX = offsetX;
+        this.firstOffsetY = offsetY;
+
+        this.secondOffsetX = offsetX;
+        this.secondOffsetY = offsetY + 2*basicHeight + this.argFirst.height();
+
+        this.thirdOffsetX = offsetX + int_width;
+        this.thirdOffsetY = offsetY + (int_height - this.argThird.height())/2;
+        ctx.font=fullSizeFontNormal;
+        ctx.fillText(this.text1, offsetX, offsetY+this.argFirst.height()+baselineOffset);
+        ctx.fillText(this.text2, offsetX, offsetY+this.argFirst.height()+basicHeight+baselineOffset);
+        ctx.font=fullSizeFont;
+        ctx.fillText(this.text3, this.thirdOffsetX+this.argThird.width(), this.thirdOffsetY+baselineOffset);        
+
+
+    }
+
+    this.width = function() {
+        return Math.max(
+            Math.max(this.argFirst.width(), this.argSecond.width()), ctx.measureText(this.text1).width) 
+        + this.argThird.width() + ctx.measureText(this.text3).width;
+    }
+
+    this.height = function() {
+        return  this.argFirst.height() + this.argSecond.height() + 2*basicHeight;
+    }
+
+    this.calculate = function(x, y) {
+        var start = this.argSecond.calculate(x,y);
+        var end = this.argFirst.calculate(x,y);
+        var step = (end-start)/10;
+        var value = 0;
+        for (i=start;i<=end;i+=step) {
+            value += step*(this.argThird.calculate(i,y) + this.argThird.calculate(i+step, y))/2
+        }
+        return value;
+    }
+
+}
+
+
+
+INTEGRAL.prototype = new THREE_ARGS_FUNCTION();
+
 
 ///////////////////////////////
 //                           //
@@ -333,6 +473,53 @@ function SQUARE () {
 }
 
 SQUARE.prototype = new ONE_ARG_FUNCTION();
+
+function SQRT () {    
+
+    this.id = counter++;
+    this.text = "√";
+    
+    this.innerPlot = function(offsetX, offsetY, ctx) {
+
+        var sqrt_width = ctx.measureText(this.text).width;
+        this.argOffsetX = offsetX + sqrt_width;
+        this.argOffsetY = offsetY + gapY;
+
+        ctx.strokeStyle="black";
+
+        ctx.beginPath();
+        ctx.lineWidth= 2*lineWidth
+        ctx.moveTo(offsetX, offsetY + this.arg.height()/3);
+        ctx.lineTo(offsetX + sqrt_width/3, offsetY + this.arg.height());
+        ctx.stroke();
+
+        ctx.lineWidth= lineWidth
+        ctx.moveTo(offsetX + sqrt_width/3, offsetY + this.arg.height());
+        ctx.lineTo(offsetX + sqrt_width, offsetY);
+        ctx.lineTo(offsetX + sqrt_width + this.arg.width(), offsetY);   
+        ctx.stroke();
+
+
+//        ctx.scale(3,3);
+//        ctx.fillText(this.text, offsetX, offsetY + baselineOffset);
+    }
+
+    this.calculate = function (x, y) {
+        return Math.sqrt(this.arg.calculate(x, y));
+    }
+
+    this.width = function () {
+        var _width = this.arg.width() + ctx.measureText(this.text).width; 
+        return  _width;
+    }
+
+    this.height = function () {
+        return this.arg.height()+gapY;
+    }
+
+}
+
+SQRT.prototype = new ONE_ARG_FUNCTION();
 
 ///////////////////////////////
 //                           //
