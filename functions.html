@@ -229,6 +229,26 @@ function setCosinus() {
     plot();
 }
 
+function setSqrt() {
+    var child = new SQRT();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setIntegral() {
+    var child = new INTEGRAL();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    child.argThird = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+
+
 
 function plot() {
     ctx.clearRect(0, 0, c.width, c.height);
@@ -479,11 +499,14 @@ function checkMatrix(a) {
     <button class="argButton" onClick="javascript:setConst(1);">1</button>
     <button class="argButton" onClick="javascript:setConst(2);">2</button>
     <button class="argButton" onClick="javascript:setBrackets();">(?)</button>
+    <button class="argButton" onClick="javascript:setSqrt();">√?</button>
+    <button class="argButton" onClick="javascript:setIntegral();">INTEGRAL</button>
+    
     <button class="argButton" onClick="javascript:setSquare();">(?²)</button>
     <button class="argButton" onClick="javascript:setSinus();">sin(?)</button>
     <button class="argButton" onClick="javascript:setCosinus();">cos(?)</button>
 
-    <button class="checkButton" style="background-color:red;color:white" onClick="javascript:alert(matrix);">Check</button>
+    <button class="checkButton" style="background-color:red;color:white" onClick="check();">Check</button>
 
     <button class="commandButton" onClick="javascript:graph();">Graph</button>
     <button class="commandButton" onClick="javascript:clearGraph();">Clear</button>
