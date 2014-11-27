@@ -385,8 +385,14 @@ function INTEGRAL () {
         var end = this.argFirst.calculate(x,y);
         var step = (end-start)/10;
         var value = 0;
+        console.log("x="+ x +"start="+start+" end="+end+" step="+step);
+        
+        if (end<=start) {return 0;}
+
         for (i=start;i<=end;i+=step) {
             value += step*(this.argThird.calculate(i,y) + this.argThird.calculate(i+step, y))/2
+            console.log("x="+ x +"adding 1/2("+this.argThird.calculate(i,y)+"+"+this.argThird.calculate(i+step, y)+")*"+step);
+            console.log("x="+ x +"value="+value);
         }
         return value;
     }
