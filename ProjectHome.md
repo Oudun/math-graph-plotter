@@ -1,0 +1,1 @@
+Graphs visualization tool accompanied with handy formula editor
