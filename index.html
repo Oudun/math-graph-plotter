@@ -1,0 +1,542 @@
+<html>
+ <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+    <style>
+    
+        .formulaType {
+            font-family: Arial; 
+            font-size:18pt;
+            font-weight:bold;
+        }
+
+        .argButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+        }
+
+        .checkButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+            background-color:red;
+            color:white;
+        }
+
+         .commandButton {
+            font-family: Arial; 
+            font-size:16pt;
+            font-weight:bold;
+            background-color:grey;
+            color:white;
+        }
+
+    </style>
+    <script>
+
+
+    </script>
+ </head>
+<body>
+<span align="left">
+    <button class="formulaType" onClick="javascript:to2D();toRect2();">y(x)</button>
+    <button class="formulaType" onClick="javascript:to2D();toParam2();">x(t), y(t)</button>
+
+<!--
+    <button class="formulaType" onClick="javascript:to3D();toParam3();">x(t), y(t), z(t)</button>
+    <button class="formulaType" onClick="javascript:to2D();toPolar();">ρ(φ)</button>
+-->
+    <button class="formulaType" onClick="javascript:to3D();toRect3();">z(x,y)</button>
+    <button class="formulaType" onClick="javascript:to3D();toSpheric();">ρ(θ,φ)</button>
+    <button class="formulaType" onClick="javascript:to3D();toCylindric();">ρ(h,φ)</button>
+</span>
+<br>
+<canvas id="c" style="padding-top:5" width="580" height="480" onclick="javascript:selectFunction(event);">canvas not supported</canvas>
+<canvas id="a" style="padding-top:5" width="580" height="480">canvas not supported</canvas>
+<script src="functions.js"></script>
+<script>
+
+var c = document.getElementById("c");
+var ctx = c.getContext("2d");
+ctx.strokeRect(0, 0, c.width, c.height);
+ctx.font = fullSizeFont;
+
+canvas = document.getElementById("a");
+context = canvas.getContext("2d");
+
+    var  startT = -2;
+    var  endT = 2;
+
+    var  startX = -2;
+    var  endX = 2;
+
+    var  startY = -2;
+    var  endY = 2;
+
+    var  startZ = -2;
+    var  endZ = 2;
+
+    var gran = 16;
+    var granPhi = 32;
+    var granTheta = 16;
+    var granT = 64;
+
+    var stepX = (endX-startX)/gran;
+    var stepY = (endY-startY)/gran;
+    var stepZ = (endZ-startZ)/gran;
+    var stepT = (endT-startT)/granT;
+
+    var startTheta = -Math.PI/2;
+    var endTheta = Math.PI/2;
+
+    var startPhi = 0;
+    var endPhi = 2*Math.PI;
+
+    var stepTheta = (endTheta-startTheta)/granTheta;
+    var stepPhi = (endPhi-startPhi)/granPhi;
+
+
+</script>
+
+<script src="graph2d.js"></script>
+<script src="graph3d.js"></script>
+
+<script>
+
+var rootFunc;
+
+function selectFunction(event) {
+
+    selectedId = 0;
+    var i = 0;
+    for (i = 0; i < functions.length; i++) {
+        if (functions[i]!=null&&
+                typeof(functions[i]) !== 'undefined' &&
+                (event.pageX - c.offsetLeft > functions[i].offsetX) &&
+                (event.pageX - c.offsetLeft) < functions[i].offsetX + functions[i].width() &&
+                (event.pageY - c.offsetTop) > functions[i].offsetY &&
+                (event.pageY - c.offsetTop) < functions[i].offsetY + functions[i].height()
+                ) {
+            selectedId = functions[i].id;
+        }
+    }
+    if (selectedId>0) {
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+        ctx.strokeRect(
+                functions[selectedId].offsetX,
+                functions[selectedId].offsetY,
+                functions[selectedId].width(),
+                functions[selectedId].height());
+    }
+}
+
+function setMultiply() {
+    var child = new MUL();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setMultiplyShort() {
+    var child = new MUL2();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setAdd() {
+    var child = new ADD();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setDiff() {
+    var child = new DIFF();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setDivide() {
+    var child = new DIV();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setConst(i) {
+    var child = new CONST(i);
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setVarX(ch) {
+    var child = new VARX(ch);
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setVarY(ch) {
+    var child = new VARY(ch);
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setBrackets() {
+    var child = new BRACKETS();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setSquare() {
+    var child = new SQUARE();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setSinus() {
+    var child = new SIN();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setCosinus() {
+    var child = new COS();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setSqrt() {
+    var child = new SQRT();
+    child.arg = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+function setIntegral() {
+    var child = new INTEGRAL();
+    child.argFirst = new CONST("?");
+    child.argSecond = new CONST("?");
+    child.argThird = new CONST("?");
+    rootFunc.replaceChild(selectedId, child);
+    ctx.clearRect(0, 0, c.width, c.height);
+    plot();
+}
+
+
+
+
+function plot() {
+    ctx.clearRect(0, 0, c.width, c.height);
+    rootFunc.plot(32, 32, ctx);
+}
+
+function check() {
+    var str = "";
+    for (i in functions) {
+        str += i;
+        if (functions[i]!=null) {
+            str += " id:" + functions[i].id;
+            str += " x:" + functions[i].offsetX;
+            str += " y:" + functions[i].offsetY;
+            str += " w:" + functions[i].width();
+            str += " h:" + functions[i].height();
+        }
+        str +="\n";
+    }
+    alert(str);
+}
+
+function checkMatrix(a) {
+    alert (a);
+}
+
+</script>
+
+<script>
+
+    function clearGraph() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function multiplyMatrixes(a, b) {
+        return multiplyMatrixes(a, b);
+    }
+
+    function restore(a, b) {
+        matrix = identityMatrix;
+        graph();
+    }
+
+    function zoomIn(a, b) {
+        matrix = multiplyMatrixes(matrix,ZoomInMatrix);
+        clearGraph();
+        graph();
+    }
+
+    function zoomOut(a, b) {
+        matrix = multiplyMatrixes(matrix,ZoomOutMatrix);
+        clearGraph();
+        graph();
+    }
+
+    function to2D() {
+        identityMatrix = IdentityMatrix2D;
+        multiplyMatrixes=multiplyMatrixes2D;
+        matrix = matrix2D;
+        ZoomInMatrix = ZoomInMatrix2D;
+        ZoomOutMatrix = ZoomOutMatrix2D;
+        document.all["rotx"].style.display='none';
+        document.all["roty"].style.display='none';
+        document.all["rotz"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+    }
+
+    function to3D() {
+        identityMatrix = identityMatrix3D;
+        multiplyMatrixes = multiplyMatrixes3D;
+        matrix = matrix3D;
+        ZoomInMatrix = ZoomInMatrix3D;
+        ZoomOutMatrix = ZoomOutMatrix3D;
+        document.all["rotx"].style.display='inline';
+        document.all["roty"].style.display='inline';
+        document.all["rotz"].style.display='inline';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+    }
+
+    function toRect2() {
+        graph = graph2D;
+        document.all["x"].style.display='inline';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION();
+        rootFunc.arg = new SIN();
+        rootFunc.arg.arg = new VARX("x");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+    }
+
+    function toRect3() {
+        graph = graphRect3D;
+        document.all["x"].style.display='inline';
+        document.all["y"].style.display='inline';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION_RECT3D();
+        rootFunc.arg = new ADD();
+        rootFunc.arg.argFirst = new SQUARE();
+        rootFunc.arg.argSecond = new SQUARE();
+        rootFunc.arg.argFirst.arg = new VARX("x");
+        rootFunc.arg.argSecond.arg = new VARY("y");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();        
+    }
+
+    function toPolar() {
+        graph = graph2D;//todo - replace
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+    }
+
+    function toParam2() {
+        graph = graphParam2D;//todo - replace
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='inline';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='inline';
+        document.all["longer"].style.display='inline';
+        rootFunc = new ROOT_FUNCTION_2PARAM();
+        rootFunc.argFirst = new MUL();
+        rootFunc.argFirst.argFirst = new VARX("t");
+        rootFunc.argFirst.argSecond = new SIN();
+        rootFunc.argFirst.argSecond.arg = new VARX("t");
+        rootFunc.argSecond = new MUL();
+        rootFunc.argSecond.argFirst = new VARX("t");
+        rootFunc.argSecond.argSecond = new COS();
+        rootFunc.argSecond.argSecond.arg = new VARX("t");
+        plot();
+    }
+
+    function toParam3() {
+        graph = graphSpheric;//replace
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='none';
+        document.all["t"].style.display='inline';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='inline';
+        document.all["longer"].style.display='inline';
+
+    }
+
+    function toSpheric() {
+        graph = graphSpheric;
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='inline';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='none';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION_SPHERIC();
+        rootFunc.arg = new SIN();
+        rootFunc.arg.arg = new VARX("θ");
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+
+    }
+
+    function toCylindric() {
+        graph = graphCylindric;
+        document.all["x"].style.display='none';
+        document.all["y"].style.display='none';
+        document.all["theta"].style.display='none';
+        document.all["phi"].style.display='inline';
+        document.all["t"].style.display='none';
+        document.all["h"].style.display='inline';
+        document.all["shorter"].style.display='none';
+        document.all["longer"].style.display='none';
+        rootFunc =  new ROOT_FUNCTION_CYLINDRIC();
+        rootFunc.arg = new CONST(1);
+        ctx.clearRect(0, 0, c.width, c.height);
+        plot();
+    }
+
+    function changeGran (n) {
+        if(n*gran>64) {
+            alert("Too smooth, sorry");
+        } else if (n*gran<4) {
+            alert("Too rought, sorry");
+        } else {
+            gran=n*gran;
+            granPhi=n*granPhi;
+            granTheta=n*granTheta;
+            stepX = (endX-startX)/gran;
+            stepY = (endY-startY)/gran;
+            stepZ = (endZ-startZ)/gran;
+            stepTheta = (endTheta-startTheta)/granTheta;
+            stepPhi = (endPhi-startPhi)/granPhi;        
+        }
+    }
+
+    function changeLen (n) {
+        if(n*gran>32) {
+            alert("Too smooth, sorry");
+        } else if (n*gran<-32) {
+            alert("Too rought, sorry");
+        } else {
+            startT = n*startT;  
+            endT = n*endT;  
+            granT = n*granT;
+            stepT = (endT-startT)/granT;
+        }
+    }
+
+</script>
+
+<br>
+
+<div align="left">
+
+    <button class="argButton" onClick="javascript:setMultiply();">?×?</button>
+    <button class="argButton" onClick="javascript:setMultiplyShort();">??</button>
+    <button class="argButton" onClick="javascript:setDivide();">?/?</button>
+    <button class="argButton" onClick="javascript:setAdd();">?+?</button>
+    <button class="argButton" onClick="javascript:setDiff();">?-?</button>
+    <button class="argButton" id="x"      onClick="javascript:setVarX('x');">x</button>
+    <button class="argButton" id="y"      onClick="javascript:setVarY('y');">y</button>
+    <button class="argButton" id="theta"  onClick="javascript:setVarX('θ');">θ</button>
+    <button class="argButton" id="phi"    onClick="javascript:setVarY('φ');">φ</button>
+    <button class="argButton" id="t"      onClick="javascript:setVarX('t');">t</button>
+    <button class="argButton" id="h"      onClick="javascript:setVarX('h');">h</button>
+    <button class="argButton" onClick="javascript:setConst(-1);">-1</button>
+    <button class="argButton" onClick="javascript:setConst(1);">1</button>
+    <button class="argButton" onClick="javascript:setConst(2);">2</button>
+    <button class="argButton" onClick="javascript:setBrackets();">(?)</button>
+    <button class="argButton" onClick="javascript:setSqrt();">√?</button>
+    <button class="argButton" onClick="javascript:setIntegral();">INTEGRAL</button>
+    
+    <button class="argButton" onClick="javascript:setSquare();">(?²)</button>
+    <button class="argButton" onClick="javascript:setSinus();">sin(?)</button>
+    <button class="argButton" onClick="javascript:setCosinus();">cos(?)</button>
+
+    <button class="checkButton" style="background-color:red;color:white" onClick="check();">Check</button>
+
+    <button class="commandButton" onClick="javascript:graph();">Graph</button>
+    <button class="commandButton" onClick="javascript:clearGraph();">Clear</button>
+    <button class="commandButton" onClick="javascript:zoomIn();">Zoom In</button>
+    <button class="commandButton" onClick="javascript:zoomOut();">Zoom Out</button>
+
+    <button class="commandButton" id="rotx" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotX);graph();">X Rot</button>
+    <button class="commandButton" id="roty" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotY);graph();">Y Rot</button>
+    <button class="commandButton" id="rotz" onClick="javascript:matrix=multiplyMatrixes(matrix,matrixRotZ);graph();">Z Rot</button>
+
+    <button class="commandButton" id="rougher" onClick="changeGran(1/2);graph();">Rougher</button>
+    <button class="commandButton" id="smoother" onClick="changeGran(2);graph();">Smoother</button>
+
+    <button class="commandButton" id="shorter" onClick="changeLen(1/2);graph();">Shorter</button>
+    <button class="commandButton" id="longer" onClick="changeLen(2);graph();">Longer</button>
+
+    <button class="commandButton" onClick="javascript:restore();">Restore</button>
+
+</div>
+
+<script>
+    to2D();
+    toRect2();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
